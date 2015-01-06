@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace Blacklite.Framework.Domain.Process.Steps
 {
+    /// <summary>
+    /// Contains a cache of step descriptors, for any type that has come through for the phase that we're constructed for
+    /// We don't know our phase (nor do we really care about it.)
+    ///
+    /// We also implement the enumerator to make it easy to list all steps in a phase.
+    /// </summary>
     class StepPhaseContainer : IEnumerable<StepDescriptor>
     {
-        private class RelatedSteps
-        {
-            public ICollection<StepDescriptor> Before { get; } = new Collection<StepDescriptor>();
-            public ICollection<StepDescriptor> After { get; } = new Collection<StepDescriptor>();
-        }
-
         private readonly IEnumerable<StepDescriptor> _descriptors;
         private readonly ConcurrentDictionary<Type, IEnumerable<StepDescriptor>> _typeSteps = new ConcurrentDictionary<Type, IEnumerable<StepDescriptor>>();
 

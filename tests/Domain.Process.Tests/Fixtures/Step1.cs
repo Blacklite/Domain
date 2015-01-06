@@ -1,4 +1,5 @@
 ﻿using Blacklite.Framework.Domain.Process;
+using Blacklite.Framework.Domain.Process.Steps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Linq;
 namespace Domain.Process.Tests.Fixtures
 {
     [BeforeStep(typeof(StepInitPhases))]
-    public class StepInit : ProcessStep<object>
+    public class StepInit : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -16,7 +17,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepPostInit : ProcessStep<object>
+    public class StepPostInit : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.PostInit;
 
@@ -26,7 +27,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(StepAllPhases))]
-    public class StepPreInit : ProcessStep<object>
+    public class StepPreInit : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.PreInit;
 
@@ -36,7 +37,7 @@ namespace Domain.Process.Tests.Fixtures
         }
     }
 
-    public class StepInitPhases : ProcessStep<object>
+    public class StepInitPhases : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.InitPhases;
 
@@ -47,7 +48,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepPreSave : ProcessStep<object>
+    public class StepPreSave : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.PreSave;
 
@@ -60,7 +61,7 @@ namespace Domain.Process.Tests.Fixtures
     public interface IInjectable { }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepSave : ProcessStep<object>
+    public class StepSave : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Save;
 
@@ -70,7 +71,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepValidate : ProcessStep<object>
+    public class StepValidate : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Validate;
 
@@ -82,7 +83,7 @@ namespace Domain.Process.Tests.Fixtures
 
     [BeforeStep(typeof(StepSavePhases))]
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepPostSave : ProcessStep<object>
+    public class StepPostSave : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.PostSave;
 
@@ -90,7 +91,7 @@ namespace Domain.Process.Tests.Fixtures
         {
         }
     }
-    public class StepSavePhases : ProcessStep<object>
+    public class StepSavePhases : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.SavePhases;
 
@@ -102,7 +103,7 @@ namespace Domain.Process.Tests.Fixtures
 
     [AfterStep(typeof(StepInitPhases))]
     [AfterStep(typeof(StepSavePhases))]
-    public class StepAllPhases : ProcessStep<object>
+    public class StepAllPhases : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.AllPhases;
 
@@ -112,42 +113,42 @@ namespace Domain.Process.Tests.Fixtures
         }
     }
 
-    public abstract class StepVoidExecute : ProcessStep<object>
+    public abstract class StepVoidExecute : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
         public abstract void Execute(object instance);
     }
 
-    public abstract class StepVoidExecuteContext : ProcessStep<object>
+    public abstract class StepVoidExecuteContext : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
         public abstract void Execute(object instance, IProcessContext context);
     }
 
-    public abstract class StepVoidExecuteInjectable : ProcessStep<object>
+    public abstract class StepVoidExecuteInjectable : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
         public abstract void Execute(object instance, IProcessContext context, IInjectable injectable);
     }
 
-    public abstract class StepValidationExecute : ProcessStep<object>
+    public abstract class StepValidationExecute : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
         public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
-    public abstract class StepValidationExecuteContext : ProcessStep<object>
+    public abstract class StepValidationExecuteContext : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
         public abstract IEnumerable<IValidation> Execute(object instance, IProcessContext context);
     }
 
-    public abstract class StepValidationExecuteInjectable : ProcessStep<object>
+    public abstract class StepValidationExecuteInjectable : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -199,7 +200,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore1StepB))]
-    public class CyclicBefore1StepA : ProcessStep<object>
+    public class CyclicBefore1StepA : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -209,7 +210,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore1StepA))]
-    public class CyclicBefore1StepB : ProcessStep<object>
+    public class CyclicBefore1StepB : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -219,7 +220,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore2StepB))]
-    public class CyclicBefore2StepA : ProcessStep<object>
+    public class CyclicBefore2StepA : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -229,7 +230,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore2StepC))]
-    public class CyclicBefore2StepB : ProcessStep<object>
+    public class CyclicBefore2StepB : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -239,7 +240,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore2StepA))]
-    public class CyclicBefore2StepC : ProcessStep<object>
+    public class CyclicBefore2StepC : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -249,7 +250,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter1StepB))]
-    public class CyclicAfter1StepA : ProcessStep<object>
+    public class CyclicAfter1StepA : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -259,7 +260,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter1StepA))]
-    public class CyclicAfter1StepB : ProcessStep<object>
+    public class CyclicAfter1StepB : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -269,7 +270,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter2StepB))]
-    public class CyclicAfter2StepA : ProcessStep<object>
+    public class CyclicAfter2StepA : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -279,7 +280,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter2StepC))]
-    public class CyclicAfter2StepB : ProcessStep<object>
+    public class CyclicAfter2StepB : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -289,7 +290,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter2StepA))]
-    public class CyclicAfter2StepC : ProcessStep<object>
+    public class CyclicAfter2StepC : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -300,7 +301,7 @@ namespace Domain.Process.Tests.Fixtures
 
     [BeforeStep(typeof(CyclicBeforeAfterStep1StepB))]
     [AfterStep(typeof(CyclicBeforeAfterStep1StepC))]
-    public class CyclicBeforeAfterStep1StepA : ProcessStep<object>
+    public class CyclicBeforeAfterStep1StepA : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -308,7 +309,7 @@ namespace Domain.Process.Tests.Fixtures
         {
         }
     }
-    public class CyclicBeforeAfterStep1StepB : ProcessStep<object>
+    public class CyclicBeforeAfterStep1StepB : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
@@ -318,7 +319,7 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicBeforeAfterStep1StepB))]
-    public class CyclicBeforeAfterStep1StepC : ProcessStep<object>
+    public class CyclicBeforeAfterStep1StepC : Step<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 

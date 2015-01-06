@@ -40,13 +40,16 @@ namespace Blacklite.Framework.Domain.Process.Requests
 
         public async Task<TResponse> Handle(TRequest message)
         {
+            // Run pre request handlers
             foreach (var preRequestHandler in _preRequestHandlers)
             {
                 preRequestHandler.Handle(message);
             }
 
+            // Run the implemented request handler
             var result = await Execute(message);
 
+            // Run post request handlers
             foreach (var postRequestHandler in _postRequestHandlers)
             {
                 postRequestHandler.Handle(message, result);

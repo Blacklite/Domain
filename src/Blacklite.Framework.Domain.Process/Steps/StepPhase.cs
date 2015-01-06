@@ -2,6 +2,9 @@
 
 namespace Blacklite.Framework.Domain.Process.Steps
 {
+    /// <summary>
+    /// Stage is an internal construct, it doesn't need to exist to the outside world.
+    /// </summary>
     enum StepStage
     {
         Ignore,
@@ -20,6 +23,9 @@ namespace Blacklite.Framework.Domain.Process.Steps
         public StepStage Stage { get; }
     }
 
+    /// <summary>
+    /// All the phases are combined, so that we can define steps that cross "stages", and define new stages in the future if needed.
+    /// </summary>
     [Flags]
     public enum StepPhase
     {

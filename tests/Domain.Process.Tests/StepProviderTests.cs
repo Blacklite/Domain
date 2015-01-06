@@ -4,6 +4,7 @@ using Moq;
 using Blacklite.Framework.Domain.Process;
 using Domain.Process.Tests.Fixtures;
 using System.Linq;
+using Blacklite.Framework.Domain.Process.Steps;
 
 namespace Domain.Process.Tests
 {
