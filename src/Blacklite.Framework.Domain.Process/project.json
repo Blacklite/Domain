@@ -2,6 +2,7 @@
     "version": "1.0.0-*",
     "dependencies": {
         "Microsoft.Framework.DependencyInjection": "1.0.0-rc1-*",
+        "Blacklite.Framework.Domain.Requests": "",
         "Blacklite.Framework.Shared": "1.0.0-beta-*",
         "Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-*", "type": "build" }
     },
