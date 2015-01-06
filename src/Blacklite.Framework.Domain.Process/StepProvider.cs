@@ -85,7 +85,8 @@ namespace Blacklite.Framework.Domain.Process
         {
             StepPhaseContainer value;
             if (_steps.TryGetValue(phase, out value))
-                return value.GetStepsForContext(instance);
+                return value.GetStepsForContext(instance)
+                    .Where(x => x.CanExecute(instance, httpContext));
 
             return Enumerable.Empty<IStepDescriptor>();
         }
@@ -95,7 +96,7 @@ namespace Blacklite.Framework.Domain.Process
             where T : class
         {
             return _initSteps.Select(x => new KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>(
-                x.Key, x.Value.GetStepsForContext(instance)));
+                x.Key, GetStepsForPhase(x.Key, instance, httpContext)));
         }
 
         public IEnumerable<KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>> GetSaveSteps<T>(
@@ -103,7 +104,7 @@ namespace Blacklite.Framework.Domain.Process
             where T : class
         {
             return _saveSteps.Select(x => new KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>(
-                x.Key, x.Value.GetStepsForContext(instance)));
+                x.Key, GetStepsForPhase(x.Key, instance, httpContext)));
         }
     }
 
@@ -134,7 +135,7 @@ namespace Blacklite.Framework.Domain.Process
             else
             {
                 if (!sorted.Contains(item))
-                    throw new Exception(string.Format("Cyclic dependency found {0}", item));
+                    throw new NotSupportedException(string.Format("Cyclic dependency found {0}", item));
             }
         }
     }

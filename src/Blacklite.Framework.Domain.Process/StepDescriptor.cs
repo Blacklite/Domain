@@ -95,12 +95,13 @@ namespace Blacklite.Framework.Domain.Process
                 {
                     instanceParameter = parameterInfos.Single(parameterInfo => parameterInfo.ParameterType == typeof(object) || parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()));
                     httpContextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(HttpContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
-                    serviceParameters = parameterInfos.Except(new[] { instanceParameter }).ToArray();
+                    serviceParameters = parameterInfos.Except(new[] { instanceParameter, httpContextParameter }).ToArray();
                 }
 
                 var parameters = new object[parameterInfos.Length];
                 parameters[instanceParameter.Position] = instance;
-                parameters[httpContextParameter.Position] = instance;
+                if (httpContextParameter != null)
+                    parameters[httpContextParameter.Position] = httpContext;
 
                 foreach (var parameterInfo in serviceParameters)
                 {
@@ -128,13 +129,9 @@ namespace Blacklite.Framework.Domain.Process
             };
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancies in Code", "RedundantNameQualifierIssue", Justification = "<Pending>")]
         private static Func<object, HttpContext, bool> GetCanExecuteAction(IStep step)
         {
-            if (step is ICanExecuteStep)
-            {
-                return (step as ICanExecuteStep).CanExecute;
-            }
-
             var typeInfo = step.GetType().GetTypeInfo();
 
             var methodInfo = typeInfo.DeclaredMethods.SingleOrDefault(x => x.Name == nameof(ICanExecuteStep.CanExecute) && x.ReturnType == typeof(bool));
@@ -145,43 +142,31 @@ namespace Blacklite.Framework.Domain.Process
             var parameterInfos = methodInfo.GetParameters();
 
             ParameterInfo contextParameter = null;
-            ParameterInfo httpContextParameter = null;
+            ParameterInfo httpContextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(HttpContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
 
-            return (httpContext, instance) =>
+            if (parameterInfos.Count() > 2 || (httpContextParameter == null && parameterInfos.Count() > 1))
+                throw new NotSupportedException(string.Format("The method '{0}' is not injectable, and only supports the context parameter with an optional HttpContext parameter.", nameof(ICanExecuteStep.CanExecute)));
+
+            return (instance, httpContext) =>
             {
                 // We're allowing them to stongly type the context param.
                 // So we don't "know" for sure what the context param is of this step until we run once.
                 if (contextParameter == null)
                 {
                     contextParameter = parameterInfos.Single(parameterInfo => parameterInfo.ParameterType == typeof(object) || parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()));
-                    httpContextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(HttpContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
                 }
 
                 var parameters = new object[parameterInfos.Length];
                 parameters[contextParameter.Position] = instance;
-                parameters[httpContextParameter.Position] = httpContext;
+                if (httpContextParameter != null)
+                    parameters[httpContextParameter.Position] = httpContext;
 
                 return (bool)methodInfo.Invoke(step, parameters);
             };
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancies in Code", "RedundantNameQualifierIssue", Justification = "Appears to be a mistake, when dealing with nameof.")]
-        private static Func<Type, bool> GetCanRunAction(IStep step)
-        {
-            if (step is ICanRunStep)
-            {
-                return (step as ICanRunStep).CanRun;
-            }
-
-            var typeInfo = step.GetType().GetTypeInfo();
-
-            var methodInfo = typeInfo.DeclaredMethods.SingleOrDefault(x => x.Name == nameof(ICanRunStep.CanRun) && x.ReturnType == typeof(bool));
-            if (methodInfo == null)
-                // If the step doesn't specify, then assume it always runs.
-                return (type) => true;
-
-            return (type) => (bool)methodInfo.Invoke(step, new object[] { type });
-        }
+        private static Func<Type, bool> GetCanRunAction(IStep step) => step.CanRun;
 
         private static IEnumerable<StepPhase> GetStepPhases(StepPhase phase)
         {

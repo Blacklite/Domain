@@ -7,6 +7,7 @@ namespace Blacklite.Framework.Domain.Process
     public interface IStep
     {
         StepPhase Phase { get; }
+        bool CanRun([NotNull] Type type);
     }
 
     public interface ICanExecuteStep
@@ -14,12 +15,7 @@ namespace Blacklite.Framework.Domain.Process
         bool CanExecute([NotNull] object instance, HttpContext context);
     }
 
-    public interface ICanRunStep
-    {
-        bool CanRun([NotNull] Type type);
-    }
-
-    public abstract class ProcessStep<T> : IStep, ICanExecuteStep, ICanRunStep
+    public abstract class ProcessStep<T> : IStep, ICanExecuteStep
         where T : class
     {
         public abstract StepPhase Phase { get; }
