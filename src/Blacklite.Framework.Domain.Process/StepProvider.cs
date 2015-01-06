@@ -13,8 +13,8 @@ namespace Blacklite.Framework.Domain.Process
     public interface IStepProvider
     {
         IEnumerable<IStepDescriptor> GetStepsForPhase<T>(StepPhase phase, [NotNull] T instance, IProcessContext context) where T : class;
-        IEnumerable<KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>> GetInitSteps<T>([NotNull] T instance, IProcessContext context) where T : class;
-        IEnumerable<KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>> GetSaveSteps<T>([NotNull] T instance, IProcessContext context) where T : class;
+        IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetInitSteps<T>([NotNull] T instance, IProcessContext context) where T : class;
+        IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetSaveSteps<T>([NotNull] T instance, IProcessContext context) where T : class;
     }
 
     class StepProvider : IStepProvider
@@ -50,6 +50,25 @@ namespace Blacklite.Framework.Domain.Process
             _saveSteps = _steps.Where(x => (x.Key & StepPhase.SavePhases) != 0);
         }
 
+        private class Grouping<TKey, TValue> : IGrouping<TKey, TValue>
+        {
+            public Grouping(TKey key, IEnumerable<TValue> values)
+            {
+                Key = key;
+                Items = values;
+            }
+            public TKey Key { get; }
+            public IEnumerable<TValue> Items { get; }
+            public IEnumerator<TValue> GetEnumerator()
+            {
+                return Items.GetEnumerator();
+            }
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return Items.GetEnumerator();
+            }
+        }
+
         public IEnumerable<IStepDescriptor> GetStepsForPhase<T>(StepPhase phase, [NotNull]T instance, IProcessContext context)
             where T : class
         {
@@ -61,20 +80,18 @@ namespace Blacklite.Framework.Domain.Process
             return Enumerable.Empty<IStepDescriptor>();
         }
 
-        public IEnumerable<KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>> GetInitSteps<T>(
+        public IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetInitSteps<T>(
             [NotNull]T instance, IProcessContext context)
             where T : class
         {
-            return _initSteps.Select(x => new KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>(
-                x.Key, GetStepsForPhase(x.Key, instance, context)));
+            return _initSteps.Select(x => new Grouping<StepPhase, IStepDescriptor>(x.Key, GetStepsForPhase(x.Key, instance, context)));
         }
 
-        public IEnumerable<KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>> GetSaveSteps<T>(
+        public IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetSaveSteps<T>(
             [NotNull]T instance, IProcessContext context)
             where T : class
         {
-            return _saveSteps.Select(x => new KeyValuePair<StepPhase, IEnumerable<IStepDescriptor>>(
-                x.Key, GetStepsForPhase(x.Key, instance, context)));
+            return _saveSteps.Select(x => new Grouping<StepPhase, IStepDescriptor>(x.Key, GetStepsForPhase(x.Key, instance, context)));
         }
     }
 }

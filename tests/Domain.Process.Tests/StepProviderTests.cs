@@ -38,7 +38,7 @@ namespace Domain.Process.Tests
 
             var provider = new StepProvider(mockSteps);
 
-            var steps = provider.GetInitSteps<object>(null, It.IsAny<IProcessContext>()).SelectMany(x => x.Value).Distinct();
+            var steps = provider.GetInitSteps<object>(null, It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
 
             //Assert.Equal(5, steps.Count());
 
@@ -55,7 +55,7 @@ namespace Domain.Process.Tests
             Assert.DoesNotContain(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetInitSteps(new object(), It.IsAny<IProcessContext>()).SelectMany(x => x.Value).Distinct();
+            steps = provider.GetInitSteps(new object(), It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
 
             //Assert.Equal(5, steps.Count());
 
@@ -102,7 +102,7 @@ namespace Domain.Process.Tests
 
             var provider = new StepProvider(mockSteps);
 
-            var steps = provider.GetSaveSteps<object>(null, It.IsAny<IProcessContext>()).SelectMany(x => x.Value).Distinct();
+            var steps = provider.GetSaveSteps<object>(null, It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
 
             Assert.Equal(6, steps.Count());
 
@@ -119,7 +119,7 @@ namespace Domain.Process.Tests
             Assert.Contains(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetSaveSteps(new object(), It.IsAny<IProcessContext>()).SelectMany(x => x.Value).Distinct();
+            steps = provider.GetSaveSteps(new object(), It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
 
             Assert.Equal(6, steps.Count());
 
