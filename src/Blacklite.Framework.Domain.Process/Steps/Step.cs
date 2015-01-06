@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Blacklite.Framework.Domain.Process
+namespace Blacklite.Framework.Domain.Process.Steps
 {
     public interface IStep
     {
@@ -14,7 +14,7 @@ namespace Blacklite.Framework.Domain.Process
         bool CanExecute([NotNull] object instance, [NotNull] IProcessContext context);
     }
 
-    public abstract class ProcessStep<T> : IStep, ICanExecuteStep
+    public abstract class Step<T> : IStep, ICanExecuteStep
         where T : class
     {
         public abstract StepPhase Phase { get; }

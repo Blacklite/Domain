@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Blacklite.Framework.Domain.Process
+namespace Blacklite.Framework.Domain.Process.Steps
 {
     enum StepStage
     {

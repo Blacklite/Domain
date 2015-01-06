@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Blacklite.Framework.Domain.Process
+namespace Blacklite.Framework.Domain.Process.Steps
 {
     //public sealed class StepOrderAttribute : Attribute
     //{

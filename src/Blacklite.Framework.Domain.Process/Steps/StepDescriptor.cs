@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Blacklite.Framework.Domain.Process
+namespace Blacklite.Framework.Domain.Process.Steps
 {
     public interface IStepDescriptor
     {

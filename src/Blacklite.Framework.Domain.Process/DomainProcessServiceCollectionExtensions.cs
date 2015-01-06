@@ -11,8 +11,14 @@ namespace Microsoft.Framework.DependencyInjection
             [NotNull] this IServiceCollection services,
             IConfiguration configuration = null)
         {
+            ConfigureDefaultServices(services, configuration);
             services.TryAdd(DomainProcessServices.GetDefaultServices(configuration));
             return services;
+        }
+
+        private static void ConfigureDefaultServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddRequestHandlers(configuration);
         }
     }
 }

@@ -14,5 +14,9 @@ namespace Microsoft.Framework.DependencyInjection
             services.TryAdd(RequestHandlerServices.GetDefaultServices(configuration));
             return services;
         }
+
+        private static void ConfigureDefaultServices(IServiceCollection services, IConfiguration configuration)
+        {
+        }
     }
 }
