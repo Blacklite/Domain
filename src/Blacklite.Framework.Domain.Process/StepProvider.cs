@@ -55,14 +55,11 @@ namespace Blacklite.Framework.Domain.Process
 
         public StepProvider(IEnumerable<IStep> allProcessSteps)
         {
-            // Todo
-            // Ordering
-            // Phases
-            // Replacement (via derived types)
             var overrideDescriptors = new List<StepDescriptor>();
 
             var descriptors = allProcessSteps
                 .Select(step => StepDescriptor.Create(allProcessSteps, overrideDescriptors, step))
+                .ToArray()
                 .Except(overrideDescriptors)
                 .Concat(overrideDescriptors)
                 .Distinct()

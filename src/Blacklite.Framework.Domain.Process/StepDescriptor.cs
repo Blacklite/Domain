@@ -49,10 +49,10 @@ namespace Blacklite.Framework.Domain.Process
 
         internal void Fixup(IEnumerable<StepDescriptor> descriptors)
         {
-            // Fixup, as they may have some null values for before and after.
-            Overrides = descriptors.Join(Overrides, x => x, x => x, (d, x) => d).ToArray();
-            Before = descriptors.Join(Before, x => x, x => x, (d, x) => d).ToArray();
-            After = descriptors.Join(After, x => x, x => x, (d, x) => d).ToArray();
+            // Fixup, as they may have some null values
+            Overrides = descriptors.Join(Overrides, x => x, x => x, (d, x) => d);
+            Before = descriptors.Join(Before, x => x, x => x, (d, x) => d);
+            After = descriptors.Join(After, x => x, x => x, (d, x) => d);
 
             DependsOn = After.Union(descriptors.Where(x => x.Before.Contains(this))).ToArray();
         }
