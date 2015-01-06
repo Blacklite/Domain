@@ -1,5 +1,4 @@
 ﻿using Blacklite.Framework.Domain.Process;
-using Microsoft.AspNet.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(object context)
+        public void Execute(object instance)
         {
         }
     }
@@ -21,7 +20,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.PostInit;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -31,7 +30,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.PreInit;
 
-        public IEnumerable<IValidation> Execute(object context)
+        public IEnumerable<IValidation> Execute(object instance)
         {
             return Enumerable.Empty<IValidation>();
         }
@@ -41,7 +40,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.InitPhases;
 
-        public IEnumerable<IValidation> Execute(HttpContext httpContext, object context)
+        public IEnumerable<IValidation> Execute(IProcessContext context, object instance)
         {
             return Enumerable.Empty<IValidation>();
         }
@@ -52,7 +51,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.PreSave;
 
-        public IEnumerable<IValidation> Execute(object context, HttpContext httpContext)
+        public IEnumerable<IValidation> Execute(object instance, IProcessContext context)
         {
             return Enumerable.Empty<IValidation>();
         }
@@ -65,7 +64,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Save;
 
-        public void Execute(object context, HttpContext httpContext, IInjectable injectable)
+        public void Execute(object instance, IProcessContext context, IInjectable injectable)
         {
         }
     }
@@ -75,7 +74,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Validate;
 
-        public IEnumerable<IValidation> Execute(object context, IInjectable injectable)
+        public IEnumerable<IValidation> Execute(object instance, IInjectable injectable)
         {
             return Enumerable.Empty<IValidation>();
         }
@@ -87,7 +86,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.PostSave;
 
-        public void Execute(object context, IInjectable injectable)
+        public void Execute(object instance, IInjectable injectable)
         {
         }
     }
@@ -95,7 +94,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.SavePhases;
 
-        public IEnumerable<IValidation> Execute(object context, HttpContext httpContext, IInjectable injectable)
+        public IEnumerable<IValidation> Execute(object instance, IProcessContext context, IInjectable injectable)
         {
             return Enumerable.Empty<IValidation>();
         }
@@ -107,7 +106,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.AllPhases;
 
-        public IEnumerable<IValidation> Execute(object context, HttpContext httpContext, IInjectable injectable)
+        public IEnumerable<IValidation> Execute(object instance, IProcessContext context, IInjectable injectable)
         {
             return Enumerable.Empty<IValidation>();
         }
@@ -117,86 +116,86 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract void Execute(object context);
+        public abstract void Execute(object instance);
     }
 
     public abstract class StepVoidExecuteContext : ProcessStep<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract void Execute(object context, HttpContext httpContext);
+        public abstract void Execute(object instance, IProcessContext context);
     }
 
     public abstract class StepVoidExecuteInjectable : ProcessStep<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract void Execute(object context, HttpContext httpContext, IInjectable injectable);
+        public abstract void Execute(object instance, IProcessContext context, IInjectable injectable);
     }
 
     public abstract class StepValidationExecute : ProcessStep<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract IEnumerable<IValidation> Execute(object context);
+        public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
     public abstract class StepValidationExecuteContext : ProcessStep<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract IEnumerable<IValidation> Execute(object context, HttpContext httpContext);
+        public abstract IEnumerable<IValidation> Execute(object instance, IProcessContext context);
     }
 
     public abstract class StepValidationExecuteInjectable : ProcessStep<object>
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract IEnumerable<IValidation> Execute(object context, HttpContext httpContext, IInjectable injectable);
+        public abstract IEnumerable<IValidation> Execute(object instance, IProcessContext context, IInjectable injectable);
     }
 
     public abstract class CustomStepCanExecute : IStep
     {
         public virtual StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract bool CanExecute(object context);
+        public abstract bool CanExecute(object instance);
 
         public abstract bool CanRun(Type type);
 
-        public abstract IEnumerable<IValidation> Execute(object context);
+        public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
     public abstract class CustomStepCanExecuteContext : IStep
     {
         public virtual StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract bool CanExecute(HttpContext httpContext, object context);
+        public abstract bool CanExecute(IProcessContext context, object instance);
 
         public abstract bool CanRun(Type type);
 
-        public abstract IEnumerable<IValidation> Execute(object context);
+        public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
     public abstract class CustomStepCanExecuteContext2 : IStep
     {
         public virtual StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract bool CanExecute(object context, HttpContext httpContext);
+        public abstract bool CanExecute(object instance, IProcessContext context);
 
         public abstract bool CanRun(Type type);
 
-        public abstract IEnumerable<IValidation> Execute(object context);
+        public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
     public abstract class CustomStepCanExecuteInvalid : IStep
     {
         public virtual StepPhase Phase { get; } = StepPhase.Init;
 
-        public abstract bool CanExecute(object context, HttpContext httpContext, IInjectable injectable);
+        public abstract bool CanExecute(object instance, IProcessContext context, IInjectable injectable);
 
         public abstract bool CanRun(Type type);
 
-        public abstract IEnumerable<IValidation> Execute(object context);
+        public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
     [BeforeStep(typeof(CyclicBefore1StepB))]
@@ -204,7 +203,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(object context)
+        public void Execute(object instance)
         {
         }
     }
@@ -214,7 +213,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -224,7 +223,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -234,7 +233,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -244,7 +243,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -254,7 +253,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(object context)
+        public void Execute(object instance)
         {
         }
     }
@@ -264,7 +263,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -274,7 +273,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -284,7 +283,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -294,7 +293,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -305,7 +304,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -313,7 +312,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }
@@ -323,7 +322,7 @@ namespace Domain.Process.Tests.Fixtures
     {
         public override StepPhase Phase { get; } = StepPhase.Init;
 
-        public void Execute(HttpContext httpContext, object context)
+        public void Execute(IProcessContext context, object instance)
         {
         }
     }

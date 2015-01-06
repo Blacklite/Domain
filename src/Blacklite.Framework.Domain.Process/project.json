@@ -1,8 +1,8 @@
 ﻿{
     "version": "1.0.0-*",
     "dependencies": {
-        "Microsoft.AspNet.Http": "1.0.0-rc1-*",
         "Microsoft.Framework.DependencyInjection": "1.0.0-rc1-*",
+        "Blacklite.Framework.Shared": "1.0.0-beta-*",
         "Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-*", "type": "build" }
     },
 
@@ -17,6 +17,7 @@
         "aspnetcore50": {
             "dependencies": {
                 "System.Runtime": "4.0.20-beta-*",
+                "System.ComponentModel": "4.0.0-beta-*",
                 "System.Reflection.Extensions": "4.0.0-beta-*",
                 "System.Collections.Concurrent": "4.0.0-beta-*",
                 "System.ObjectModel": "4.0.10-beta-*"

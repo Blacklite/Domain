@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +8,14 @@ namespace Blacklite.Framework.Domain.Process
 {
     public interface IStepDescriptor
     {
-        Func<object, IServiceProvider, HttpContext, IEnumerable<IValidation>> Execute { get; }
+        Func<object, IProcessContext, IEnumerable<IValidation>> Execute { get; }
     }
 
     class StepDescriptor : IStepDescriptor
     {
-        public Func<object, IServiceProvider, HttpContext, IEnumerable<IValidation>> Execute { get; private set; }
+        public Func<object, IProcessContext, IEnumerable<IValidation>> Execute { get; private set; }
 
-        internal IStep Step { get; private set; }
+        public IStep Step { get; private set; }
 
         private Type _stepType;
         private Type StepType
@@ -29,25 +28,25 @@ namespace Blacklite.Framework.Domain.Process
             }
         }
 
-        internal string Name { get { return StepType.Name; } }
+        public string Name { get { return StepType.Name; } }
 
-        internal IEnumerable<StepStage> Stages { get; private set; }
+        public IEnumerable<StepStage> Stages { get; private set; }
 
-        internal IEnumerable<StepPhase> Phases { get; private set; }
+        public IEnumerable<StepPhase> Phases { get; private set; }
 
-        internal Func<object, HttpContext, bool> CanExecute { get; private set; }
+        public Func<object, IProcessContext, bool> CanExecute { get; private set; }
 
-        internal Func<Type, bool> CanRun { get; private set; }
+        public Func<Type, bool> CanRun { get; private set; }
 
-        internal IEnumerable<StepDescriptor> Overrides { get; private set; }
+        public IEnumerable<StepDescriptor> Overrides { get; private set; }
 
-        internal IEnumerable<StepDescriptor> Before { get; private set; }
+        public IEnumerable<StepDescriptor> Before { get; private set; }
 
-        internal IEnumerable<StepDescriptor> After { get; private set; }
+        public IEnumerable<StepDescriptor> After { get; private set; }
 
-        internal IEnumerable<StepDescriptor> DependsOn { get; private set; }
+        public IEnumerable<StepDescriptor> DependsOn { get; private set; }
 
-        internal void Fixup(IEnumerable<StepDescriptor> descriptors)
+        public void Fixup(IEnumerable<StepDescriptor> descriptors)
         {
             // Fixup, as they may have some null values
             Overrides = descriptors.Join(Overrides, x => x, x => x, (d, x) => d);
@@ -57,7 +56,7 @@ namespace Blacklite.Framework.Domain.Process
             DependsOn = After.Union(descriptors.Where(x => x.Before.Contains(this))).ToArray();
         }
 
-        internal static StepDescriptor Create(IEnumerable<IStep> steps, ICollection<StepDescriptor> overrideSteps, IStep step)
+        public static StepDescriptor Create(IEnumerable<IStep> steps, ICollection<StepDescriptor> overrideSteps, IStep step)
         {
             return new StepDescriptor()
             {
@@ -73,7 +72,7 @@ namespace Blacklite.Framework.Domain.Process
             };
         }
 
-        private static Func<object, IServiceProvider, HttpContext, IEnumerable<IValidation>> GetExecuteAction([NotNull] IStep step)
+        private static Func<object, IProcessContext, IEnumerable<IValidation>> GetExecuteAction([NotNull] IStep step)
         {
             var typeInfo = step.GetType().GetTypeInfo();
 
@@ -84,30 +83,30 @@ namespace Blacklite.Framework.Domain.Process
             var parameterInfos = methodInfo.GetParameters();
 
             ParameterInfo instanceParameter = null;
-            ParameterInfo httpContextParameter = null;
+            ParameterInfo contextParameter = null;
             ParameterInfo[] serviceParameters = null;
 
-            return (instance, serviceProvider, httpContext) =>
+            return (instance, context) =>
             {
                 // We're allowing them to stongly type the context param.
                 // So we don't "know" for sure what the context param is of this step until we run once.
                 if (instanceParameter == null)
                 {
                     instanceParameter = parameterInfos.Single(parameterInfo => parameterInfo.ParameterType == typeof(object) || parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()));
-                    httpContextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(HttpContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
-                    serviceParameters = parameterInfos.Except(new[] { instanceParameter, httpContextParameter }).ToArray();
+                    contextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(IProcessContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
+                    serviceParameters = parameterInfos.Except(new[] { instanceParameter, contextParameter }).ToArray();
                 }
 
                 var parameters = new object[parameterInfos.Length];
                 parameters[instanceParameter.Position] = instance;
-                if (httpContextParameter != null)
-                    parameters[httpContextParameter.Position] = httpContext;
+                if (contextParameter != null)
+                    parameters[contextParameter.Position] = context;
 
                 foreach (var parameterInfo in serviceParameters)
                 {
                     try
                     {
-                        parameters[parameterInfo.Position] = (httpContext?.RequestServices ?? serviceProvider).GetRequiredService(parameterInfo.ParameterType);
+                        parameters[parameterInfo.Position] = context.ProcessServices.GetRequiredService(parameterInfo.ParameterType);
                     }
                     catch (Exception)
                     {
@@ -129,43 +128,41 @@ namespace Blacklite.Framework.Domain.Process
             };
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancies in Code", "RedundantNameQualifierIssue", Justification = "<Pending>")]
-        private static Func<object, HttpContext, bool> GetCanExecuteAction(IStep step)
+        private static Func<object, IProcessContext, bool> GetCanExecuteAction(IStep step)
         {
             var typeInfo = step.GetType().GetTypeInfo();
 
             var methodInfo = typeInfo.DeclaredMethods.SingleOrDefault(x => x.Name == nameof(ICanExecuteStep.CanExecute) && x.ReturnType == typeof(bool));
             if (methodInfo == null)
                 // If the step doesn't specify, then assume it always runs.
-                return (httpContext, instance) => true;
+                return (context, instance) => true;
 
             var parameterInfos = methodInfo.GetParameters();
 
-            ParameterInfo contextParameter = null;
-            ParameterInfo httpContextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(HttpContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
+            ParameterInfo instanceParameter = null;
+            ParameterInfo contextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(IProcessContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
 
-            if (parameterInfos.Count() > 2 || (httpContextParameter == null && parameterInfos.Count() > 1))
-                throw new NotSupportedException(string.Format("The method '{0}' is not injectable, and only supports the context parameter with an optional HttpContext parameter.", nameof(ICanExecuteStep.CanExecute)));
+            if (parameterInfos.Count() > 2 || (contextParameter == null && parameterInfos.Count() > 1))
+                throw new NotSupportedException(string.Format("The method '{0}' is not injectable, and only supports the context parameter with an optional IProcessContext parameter.", nameof(ICanExecuteStep.CanExecute)));
 
-            return (instance, httpContext) =>
+            return (instance, context) =>
             {
                 // We're allowing them to stongly type the context param.
                 // So we don't "know" for sure what the context param is of this step until we run once.
-                if (contextParameter == null)
+                if (instanceParameter == null)
                 {
-                    contextParameter = parameterInfos.Single(parameterInfo => parameterInfo.ParameterType == typeof(object) || parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()));
+                    instanceParameter = parameterInfos.Single(parameterInfo => parameterInfo.ParameterType == typeof(object) || parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()));
                 }
 
                 var parameters = new object[parameterInfos.Length];
-                parameters[contextParameter.Position] = instance;
-                if (httpContextParameter != null)
-                    parameters[httpContextParameter.Position] = httpContext;
+                parameters[instanceParameter.Position] = instance;
+                if (contextParameter != null)
+                    parameters[contextParameter.Position] = context;
 
                 return (bool)methodInfo.Invoke(step, parameters);
             };
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancies in Code", "RedundantNameQualifierIssue", Justification = "Appears to be a mistake, when dealing with nameof.")]
         private static Func<Type, bool> GetCanRunAction(IStep step) => step.CanRun;
 
         private static IEnumerable<StepPhase> GetStepPhases(StepPhase phase)
@@ -257,25 +254,11 @@ namespace Blacklite.Framework.Domain.Process
             return Step.Equals(((StepDescriptor)obj).Step);
         }
 
-        public override string ToString() =>
-            string.Format("Step {0} {{ Depends On: {1} }}", Name, string.Join(", ", DependsOn.Select(x => x.Name)));
-    }
-
-    static class test1
-    {
-        private static MethodInfo _hasFlagMethod = typeof(Enum).GetTypeInfo().DeclaredMethods.Single(x => x.Name == nameof(StepStage.HasFlag));
-        public static IEnumerable<T> GetFlags<T>(this Enum value)
-            where T : struct
+        public override string ToString()
         {
-            return value.GetFlags().Cast<T>();
-        }
-
-        public static IEnumerable<Enum> GetFlags(this Enum value)
-        {
-            return Enum.GetValues(value.GetType())
-                         .Cast<Enum>()
-                         .Where(m => (bool)_hasFlagMethod.Invoke(value, new[] { m }));
+            if (DependsOn != null && DependsOn.Any())
+                return string.Format("Step {0} {{ DependsOn: {1} }}", Name, string.Join(", ", DependsOn.Select(x => x.Name)));
+            return string.Format("Step {0}", Name);
         }
     }
-
 }
