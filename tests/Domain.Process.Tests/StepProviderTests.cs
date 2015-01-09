@@ -438,7 +438,7 @@ namespace Domain.Process.Tests
 
             foreach (var step in steps)
             {
-                step.Execute(context, processContext);
+                step.Execute(serviceProvider, context, processContext);
             }
 
             voidExecuteMock.Verify(x => x.Execute(context));

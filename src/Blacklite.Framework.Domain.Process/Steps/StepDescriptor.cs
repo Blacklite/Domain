@@ -12,7 +12,7 @@ namespace Blacklite.Framework.Domain.Process.Steps
     /// </summary>
     public interface IStepDescriptor
     {
-        Func<object, IProcessContext, IEnumerable<IValidation>> Execute { get; }
+        Func<IServiceProvider, object, IProcessContext, IEnumerable<IValidation>> Execute { get; }
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ namespace Blacklite.Framework.Domain.Process.Steps
         /// <summary>
         ///  The execute method
         /// </summary>
-        public Func<object, IProcessContext, IEnumerable<IValidation>> Execute { get; private set; }
+        public Func<IServiceProvider, object, IProcessContext, IEnumerable<IValidation>> Execute { get; private set; }
 
         /// <summary>
         /// The underlying step
@@ -127,65 +127,15 @@ namespace Blacklite.Framework.Domain.Process.Steps
             };
         }
 
-        private static Func<object, IProcessContext, IEnumerable<IValidation>> GetExecuteAction([NotNull] IStep step)
+        private static Func<IServiceProvider, object, IProcessContext, IEnumerable<IValidation>> GetExecuteAction([NotNull] IStep step)
         {
             var typeInfo = step.GetType().GetTypeInfo();
 
-            // Warn that there is no execute method.
-            var methodInfo = typeInfo.DeclaredMethods.FirstOrDefault(x => x.Name == "Execute" && (x.ReturnType == typeof(void) || x.ReturnType == typeof(IEnumerable<IValidation>)));
-            if (methodInfo == null)
-                throw new NotImplementedException(string.Format("The process step '{0}' does not implement an 'Execute' method that returns void or validation errors.", typeInfo.FullName));
-
-            var parameterInfos = methodInfo.GetParameters();
-
-            ParameterInfo instanceParameter = parameterInfos.SingleOrDefault(parameterInfo => parameterInfo.ParameterType == typeof(object));
-            ParameterInfo contextParameter = parameterInfos.SingleOrDefault(parameterInfo => typeof(IProcessContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()));
-            ParameterInfo[] serviceParameters = null;
-
-            // Return our own execute method, to cache the method info in the closure.
-            return (instance, context) =>
-            {
-                // We're allowing them to stongly type the context param.
-                // So we don't "know" for sure what the context param is of this step until we run once.
-                if (instanceParameter == null)
-                {
-                    instanceParameter = parameterInfos.Single(parameterInfo => parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()));
-                }
-
-                if (serviceParameters == null)
-                {
-                    serviceParameters = parameterInfos.Except(new[] { instanceParameter, contextParameter }).ToArray();
-                }
-
-                var parameters = new object[parameterInfos.Length];
-                parameters[instanceParameter.Position] = instance;
-                if (contextParameter != null)
-                    parameters[contextParameter.Position] = context;
-
-                foreach (var parameterInfo in serviceParameters)
-                {
-                    try
-                    {
-                        parameters[parameterInfo.Position] = context.ProcessServices.GetRequiredService(parameterInfo.ParameterType);
-                    }
-                    catch (Exception)
-                    {
-                        throw new Exception(string.Format(
-                            "TODO: Unable to resolve service for {0} method {1} {2}",
-                            methodInfo.Name,
-                            parameterInfo.Name,
-                            parameterInfo.ParameterType.FullName));
-                    }
-                }
-
-                if (methodInfo.ReturnType == typeof(void))
-                {
-                    methodInfo.Invoke(step, parameters);
-                    return Enumerable.Empty<IValidation>();
-                }
-
-                return (IEnumerable<IValidation>)methodInfo.Invoke(step, parameters);
-            };
+            return typeInfo.CreateInjectableMethod("Execute", x => x.ReturnType == typeof(void) || x.ReturnType == typeof(IEnumerable<IValidation>))
+                .ConfigureParameter(parameterInfo => typeof(IProcessContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()), optional: true)
+                .ConfigureInstanceParameter(typeof(object), instance => parameterInfo => parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()))
+                .ReturnType(typeof(void),typeof(IEnumerable<IValidation>))
+                .CreateFunc<object, IProcessContext, IEnumerable<IValidation>>(step);
         }
 
         private static Func<object, IProcessContext, bool> GetCanExecuteAction(IStep step)
