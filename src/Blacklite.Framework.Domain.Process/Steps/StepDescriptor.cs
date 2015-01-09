@@ -1,4 +1,5 @@
-﻿using Microsoft.Framework.DependencyInjection;
+﻿using Blacklite.Framework.Shared.Reflection;
+using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,7 +134,7 @@ namespace Blacklite.Framework.Domain.Process.Steps
 
             return typeInfo.CreateInjectableMethod("Execute", x => x.ReturnType == typeof(void) || x.ReturnType == typeof(IEnumerable<IValidation>))
                 .ConfigureParameter(parameterInfo => typeof(IProcessContext).GetTypeInfo().IsAssignableFrom(parameterInfo.ParameterType.GetTypeInfo()), optional: true)
-                .ConfigureInstanceParameter(typeof(object), instance => parameterInfo => parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()))
+                .ConfigureInstanceParameter(instance => parameterInfo => parameterInfo.ParameterType.GetTypeInfo().IsAssignableFrom(instance.GetType().GetTypeInfo()))
                 .ReturnType(typeof(void),typeof(IEnumerable<IValidation>))
                 .CreateFunc<object, IProcessContext, IEnumerable<IValidation>>(step);
         }
