@@ -58,14 +58,14 @@ namespace Blacklite.Framework.Domain.Process.Steps
         ///
         /// A process step can span stages
         /// </summary>
-        public IEnumerable<StepStage> Stages { get; private set; }
+        public IEnumerable<string> Stages { get; private set; }
 
         /// <summary>
         /// Gets the phases this step is a part of.
         ///
         /// A process step can span many phases
         /// </summary>
-        public IEnumerable<StepPhase> Phases { get; private set; }
+        public IEnumerable<IStepPhase> Phases { get; private set; }
 
         /// <summary>
         ///  The underling Can Execute method
@@ -117,8 +117,8 @@ namespace Blacklite.Framework.Domain.Process.Steps
             return new StepDescriptor()
             {
                 Step = step,
-                Phases = GetStepPhases(step.Phase),
-                Stages = GetStepStages(step.Phase),
+                Phases = step.Phases,
+                Stages = step.Phases.Select(x => x.Stage).Distinct(),
                 Overrides = GetStepOverrides(steps, overrideSteps, step),
                 _before = GetRunsBefore(steps, overrideSteps, step),
                 _after = GetRunsAfter(steps, overrideSteps, step),
@@ -177,35 +177,6 @@ namespace Blacklite.Framework.Domain.Process.Steps
         }
 
         private static Func<Type, bool> GetCanRunAction(IStep step) => step.CanRun;
-
-        private static IEnumerable<StepPhase> GetStepPhases(StepPhase phase)
-        {
-            var phases = phase.GetFlags<StepPhase>();
-
-            // Filter out phases that aren't real phases (just shortcuts)
-            return typeof(StepPhase).GetTypeInfo().DeclaredMembers
-                .Join(phases, memberInfo => memberInfo.Name, @enum => @enum.ToString(),
-                    (memberInfo, x2) => new { memberInfo, x2 })
-                .Where(x => x.memberInfo.GetCustomAttribute<StepStageAttribute>().Stage != StepStage.Ignore)
-                .Select(x => x.x2)
-                .Distinct();
-        }
-
-        private static IEnumerable<StepStage> GetStepStages(StepPhase phase)
-        {
-            var phases = GetStepPhases(phase);
-
-            // Find the stages of the phases
-            var memberInfos = typeof(StepPhase).GetTypeInfo().DeclaredMembers
-                .Join(phases, memberInfo => memberInfo.Name, @enum => @enum.ToString(),
-                    (x1, x2) => x1)
-                .SelectMany(memberInfo => memberInfo.GetCustomAttributes<StepStageAttribute>())
-                .Select(x => x.Stage)
-                .Where(x => x != StepStage.Ignore)
-                .Distinct();
-
-            return memberInfos;
-        }
 
         private static IEnumerable<StepDescriptor> GetStepOverrides(IEnumerable<IStep> steps, ICollection<StepDescriptor> overrideSteps, IStep step)
         {

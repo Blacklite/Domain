@@ -285,15 +285,6 @@ namespace Domain.Process.Tests
             Assert.DoesNotContain(stepInitPhases, underlyingSteps);
             Assert.Contains(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
-
-            steps = provider.GetStepsForPhase(StepPhase.InitPhases, new object(), It.IsAny<IProcessContext>());
-            Assert.Equal(0, steps.Count());
-
-            steps = provider.GetStepsForPhase(StepPhase.SavePhases, new object(), It.IsAny<IProcessContext>());
-            Assert.Equal(0, steps.Count());
-
-            steps = provider.GetStepsForPhase(StepPhase.AllPhases, new object(), It.IsAny<IProcessContext>());
-            Assert.Equal(0, steps.Count());
         }
 
         [Fact]
@@ -389,17 +380,17 @@ namespace Domain.Process.Tests
             var voidExecuteContextMock = new Mock<StepVoidExecuteContext>();
             var voidExecuteInjectableMock = new Mock<StepVoidExecuteInjectable>();
             voidExecuteMock.Setup(x => x.Execute(context));
-            voidExecuteMock.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            voidExecuteMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             voidExecuteMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             voidExecuteMock.Setup(x => x.CanExecute(context, processContext)).Returns(true);
 
             voidExecuteContextMock.Setup(x => x.Execute(context, processContext));
-            voidExecuteContextMock.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            voidExecuteContextMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             voidExecuteContextMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             voidExecuteContextMock.Setup(x => x.CanExecute(context, processContext)).Returns(true);
 
             voidExecuteInjectableMock.Setup(x => x.Execute(context, processContext, injectable));
-            voidExecuteInjectableMock.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            voidExecuteInjectableMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             voidExecuteInjectableMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             voidExecuteInjectableMock.Setup(x => x.CanExecute(context, processContext)).Returns(true);
 
@@ -408,17 +399,17 @@ namespace Domain.Process.Tests
             var validationExecuteContextMock = new Mock<StepValidationExecuteContext>();
             var validationExecuteInjectableMock = new Mock<StepValidationExecuteInjectable>();
             validationExecuteMock.Setup(x => x.Execute(context));
-            validationExecuteMock.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            validationExecuteMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             validationExecuteMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             validationExecuteMock.Setup(x => x.CanExecute(It.IsAny<object>(), It.IsAny<IProcessContext>())).Returns(true);
 
             validationExecuteContextMock.Setup(x => x.Execute(context, processContext));
-            validationExecuteContextMock.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            validationExecuteContextMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             validationExecuteContextMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             validationExecuteContextMock.Setup(x => x.CanExecute(It.IsAny<object>(), It.IsAny<IProcessContext>())).Returns(true);
 
             validationExecuteInjectableMock.Setup(x => x.Execute(context, processContext, injectable));
-            validationExecuteInjectableMock.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            validationExecuteInjectableMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             validationExecuteInjectableMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             validationExecuteInjectableMock.Setup(x => x.CanExecute(It.IsAny<object>(), It.IsAny<IProcessContext>())).Returns(true);
 
@@ -470,17 +461,17 @@ namespace Domain.Process.Tests
             var customStepCanExecute = new Mock<CustomStepCanExecute>();
             var customStepCanExecuteContext = new Mock<CustomStepCanExecuteContext>();
             var customStepCanExecuteContext2 = new Mock<CustomStepCanExecuteContext2>();
-            customStepCanExecute.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            customStepCanExecute.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             customStepCanExecute.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             customStepCanExecute.Setup(x => x.CanExecute(context)).Returns(true);
             customStepCanExecute.Setup(x => x.Execute(context)).Returns(Enumerable.Empty<IValidation>());
 
-            customStepCanExecuteContext.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            customStepCanExecuteContext.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             customStepCanExecuteContext.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             customStepCanExecuteContext.Setup(x => x.CanExecute(It.IsAny<IProcessContext>(), context)).Returns(true);
             customStepCanExecuteContext.Setup(x => x.Execute(context)).Returns(Enumerable.Empty<IValidation>());
 
-            customStepCanExecuteContext2.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            customStepCanExecuteContext2.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             customStepCanExecuteContext2.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             customStepCanExecuteContext2.Setup(x => x.CanExecute(context, It.IsAny<IProcessContext>())).Returns(true);
             customStepCanExecuteContext2.Setup(x => x.Execute(context)).Returns(Enumerable.Empty<IValidation>());
@@ -518,7 +509,7 @@ namespace Domain.Process.Tests
             processContextMock.SetupGet(x => x.ProcessServices).Returns(serviceProviderMock.Object);
 
             var customStepCanExecuteInvalid = new Mock<CustomStepCanExecuteInvalid>();
-            customStepCanExecuteInvalid.SetupGet(x => x.Phase).Returns(StepPhase.Init);
+            customStepCanExecuteInvalid.SetupGet(x => x.Phases).Returns(StepPhase.Init);
             customStepCanExecuteInvalid.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
             customStepCanExecuteInvalid.Setup(x => x.CanExecute(context, processContext, new Mock<IInjectable>().Object)).Returns(true);
 

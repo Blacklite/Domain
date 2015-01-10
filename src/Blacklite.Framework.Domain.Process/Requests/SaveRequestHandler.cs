@@ -33,7 +33,7 @@ namespace Blacklite.Framework.Domain.Process.Requests
             var processContext = ProcessContextProvider.GetContextFor(message.Request);
 
             // Get the steps for the stage
-            var steps = StepProvider.GetSaveSteps(message.Request, processContext);
+            var steps = StepProvider.GetStepsForStage(StepProviderExtensions.Save, message.Request, processContext);
 
             var validations = new List<IValidation>();
             Response.Errors = validations;

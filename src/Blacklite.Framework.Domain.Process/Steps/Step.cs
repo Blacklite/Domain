@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Blacklite.Framework.Domain.Process.Steps
@@ -21,7 +22,7 @@ namespace Blacklite.Framework.Domain.Process.Steps
     /// </summary>
     public interface IStep
     {
-        StepPhase Phase { get; }
+        IEnumerable<IStepPhase> Phases { get; }
         bool CanRun([NotNull] Type type);
     }
 
@@ -42,7 +43,7 @@ namespace Blacklite.Framework.Domain.Process.Steps
     public abstract class Step<T> : IStep, ICanExecuteStep
         where T : class
     {
-        public abstract StepPhase Phase { get; }
+        public abstract IEnumerable<IStepPhase> Phases { get; }
 
         public virtual bool CanExecute(T instance, IProcessContext context) => true;
 

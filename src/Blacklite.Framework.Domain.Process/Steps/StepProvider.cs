@@ -23,34 +23,22 @@ namespace Blacklite.Framework.Domain.Process.Steps
         /// <param name="instance"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        IEnumerable<IStepDescriptor> GetStepsForPhase<T>(StepPhase phase, [NotNull] T instance, IProcessContext context) where T : class;
+        IEnumerable<IStepDescriptor> GetStepsForPhase<T>([NotNull]IStepPhase phase, [NotNull] T instance, [NotNull]IProcessContext context) where T : class;
         /// <summary>
-        /// Get a grouping of all the steps for the init stage
-        ///
-        /// This list is ordered based on the run order of the stage.
+        /// Get a grouping of all steps for the current given stage.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="stage"></param>
         /// <param name="instance"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetInitSteps<T>([NotNull] T instance, IProcessContext context) where T : class;
-        /// <summary>
-        /// Get a grouping of all the steps for the save stage
-        ///
-        /// This list is ordered based on the run order of the stage.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="instance"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetSaveSteps<T>([NotNull] T instance, IProcessContext context) where T : class;
+        IEnumerable<IGrouping<IStepPhase, IStepDescriptor>> GetStepsForStage<T>(string stage, [NotNull] T instance, [NotNull]IProcessContext context) where T : class;
     }
 
     class StepProvider : IStepProvider
     {
-        private readonly IReadOnlyDictionary<StepPhase, StepPhaseContainer> _steps;
-        private readonly IEnumerable<KeyValuePair<StepPhase, StepPhaseContainer>> _initSteps;
-        private readonly IEnumerable<KeyValuePair<StepPhase, StepPhaseContainer>> _saveSteps;
+        private readonly IReadOnlyDictionary<IStepPhase, StepPhaseContainer> _steps;
+        private readonly IReadOnlyDictionary<string, IEnumerable<IStepPhase>> _stages;
 
         public StepProvider(IEnumerable<IStep> allProcessSteps)
         {
@@ -75,21 +63,24 @@ namespace Blacklite.Framework.Domain.Process.Steps
             foreach (var d in descriptors)
                 d.Fixup(descriptors);
 
-            _steps = new ReadOnlyDictionary<StepPhase, StepPhaseContainer>(
-                descriptors
+            var sortedSteps = descriptors
                     // Sorts the entire list based on the dependencies.
                     .TopographicalSort(x => x.DependsOn)
                     // Select all the descitptors out into each of the supported phases
                     .SelectMany(x => x.Phases, (d, p) => new { Phase = p, Descriptor = d })
                     // Group for each phase
-                    .GroupBy(x => x.Phase, x => x.Descriptor)
+                    .GroupBy(x => x.Phase, x => x.Descriptor);
+
+            _steps = new ReadOnlyDictionary<IStepPhase, StepPhaseContainer>(
                     // Place each phase in a container.
-                    .ToDictionary(x => x.Key, x => new StepPhaseContainer(x))
+                    sortedSteps.ToDictionary(x => x.Key, x => new StepPhaseContainer(x))
                 );
 
-            // Isolate major stages for later use.
-            _initSteps = _steps.Where(x => (x.Key & StepPhase.InitPhases) != 0);
-            _saveSteps = _steps.Where(x => (x.Key & StepPhase.SavePhases) != 0);
+            _stages = new ReadOnlyDictionary<string, IEnumerable<IStepPhase>>(
+                 _steps
+                    .GroupBy(x => x.Key.Stage, x => x.Key)
+                    .ToDictionary(x => x.Key, x => x.Distinct().OrderByDescending(z => z.Order).AsEnumerable())
+                );
         }
 
         private class Grouping<TKey, TValue> : IGrouping<TKey, TValue>
@@ -111,7 +102,7 @@ namespace Blacklite.Framework.Domain.Process.Steps
             }
         }
 
-        public IEnumerable<IStepDescriptor> GetStepsForPhase<T>(StepPhase phase, [NotNull]T instance, IProcessContext context)
+        public IEnumerable<IStepDescriptor> GetStepsForPhase<T>(IStepPhase phase, [NotNull]T instance, IProcessContext context)
             where T : class
         {
             StepPhaseContainer value;
@@ -126,18 +117,13 @@ namespace Blacklite.Framework.Domain.Process.Steps
             return Enumerable.Empty<IStepDescriptor>();
         }
 
-        public IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetInitSteps<T>(
-            [NotNull]T instance, IProcessContext context)
-            where T : class
+        public IEnumerable<IGrouping<IStepPhase, IStepDescriptor>> GetStepsForStage<T>(string stage, [NotNull]T instance, [NotNull]IProcessContext context) where T : class
         {
-            return _initSteps.Select(x => new Grouping<StepPhase, IStepDescriptor>(x.Key, GetStepsForPhase(x.Key, instance, context)));
-        }
+            IEnumerable<IStepPhase> phases;
+            if (!_stages.TryGetValue(stage, out phases))
+                return Enumerable.Empty<IGrouping<IStepPhase, IStepDescriptor>>();
 
-        public IEnumerable<IGrouping<StepPhase, IStepDescriptor>> GetSaveSteps<T>(
-            [NotNull]T instance, IProcessContext context)
-            where T : class
-        {
-            return _saveSteps.Select(x => new Grouping<StepPhase, IStepDescriptor>(x.Key, GetStepsForPhase(x.Key, instance, context)));
+            return phases.Select(x => new Grouping<IStepPhase, IStepDescriptor>(x, GetStepsForPhase(x, instance, context)));
         }
     }
 }

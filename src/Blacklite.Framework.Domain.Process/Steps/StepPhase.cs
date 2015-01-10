@@ -1,54 +1,74 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Blacklite.Framework.Domain.Process.Steps
 {
-    /// <summary>
-    /// Stage is an internal construct, it doesn't need to exist to the outside world.
-    /// </summary>
-    enum StepStage
+    public interface IStepPhase
     {
-        Ignore,
-        Init,
-        Save
+        string Stage { get; }
+        int Order { get; }
     }
 
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
-    class StepStageAttribute : Attribute
+    public class StepPhase : IStepPhase, IEnumerable<IStepPhase>
     {
-        public StepStageAttribute(StepStage stage)
+        private readonly string _name;
+
+        public StepPhase(string name, int order, string stage)
         {
+            _name = name;
+            Order = order;
             Stage = stage;
         }
 
-        public StepStage Stage { get; }
-    }
+        public string Stage { get; }
 
-    /// <summary>
-    /// All the phases are combined, so that we can define steps that cross "stages", and define new stages in the future if needed.
-    /// </summary>
-    [Flags]
-    public enum StepPhase
-    {
-        [StepStage(StepStage.Init)]
-        PreInit = 1 << 0,
-        [StepStage(StepStage.Init)]
-        Init = 1 << 1,
-        [StepStage(StepStage.Init)]
-        PostInit = 1 << 2,
-        [StepStage(StepStage.Save)]
-        PreSave = 1 << 3,
-        [StepStage(StepStage.Save)]
-        Validate = 1 << 4,
-        [StepStage(StepStage.Save)]
-        Save = 1 << 5,
-        [StepStage(StepStage.Save)]
-        PostSave = 1 << 6,
-        // Shortcuts
-        [StepStage(StepStage.Ignore)]
-        InitPhases = Init | PreInit | PostInit,
-        [StepStage(StepStage.Ignore)]
-        SavePhases = PostSave | PreSave | Save | Validate,
-        [StepStage(StepStage.Ignore)]
-        AllPhases = InitPhases | SavePhases
+        /// <summary>
+        /// 0 is first
+        /// </summary>
+        public int Order { get; }
+
+        static StepPhase()
+        {
+            PreInit = new StepPhase(nameof(PreInit), 0, StepProviderExtensions.Init);
+            Init = new StepPhase(nameof(Init), 1, StepProviderExtensions.Init);
+            PostInit = new StepPhase(nameof(PostInit), 2, StepProviderExtensions.Init);
+            InitPhases = PreInit.Union(Init).Union(PostInit);
+
+            PreSave = new StepPhase(nameof(PreSave), 0, StepProviderExtensions.Save);
+            Validate = new StepPhase(nameof(Validate), 1, StepProviderExtensions.Save);
+            Save = new StepPhase(nameof(Save), 2, StepProviderExtensions.Save);
+            PostSave = new StepPhase(nameof(PostSave), 3, StepProviderExtensions.Save);
+            SavePhases = PreSave.Union(Validate).Union(Save).Union(PostSave);
+
+            AllPhases = InitPhases.Union(SavePhases);
+        }
+
+        public override string ToString() => string.Format("[{0}]{1}", Stage, _name);
+
+        public IEnumerator<IStepPhase> GetEnumerator()
+        {
+            return new[] { this }.AsEnumerable().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public static StepPhase PreInit { get; }
+        public static StepPhase Init { get; }
+        public static StepPhase PostInit { get; }
+        public static IEnumerable<IStepPhase> InitPhases { get; }
+
+        public static StepPhase PreSave { get; }
+        public static StepPhase Validate { get; }
+        public static StepPhase Save { get; }
+        public static StepPhase PostSave { get; }
+
+        public static IEnumerable<IStepPhase> SavePhases { get; }
+
+        public static IEnumerable<IStepPhase> AllPhases { get; }
     }
 }
