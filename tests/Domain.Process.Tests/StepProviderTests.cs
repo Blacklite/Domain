@@ -39,13 +39,13 @@ namespace Domain.Process.Tests
                 stepAllPhases
             };
 
-            var provider = new DomainStepProvider(new StepCache<,>(mockSteps));
+            var provider = new DomainStepProvider(new DomainStepCache(mockSteps));
 
             var steps = provider.GetInitSteps<object>(null, It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
 
             //Assert.Equal(5, steps.Count());
 
-            var underlyingSteps = steps.Cast< IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            var underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.Contains(stepPreInit, underlyingSteps);
             Assert.Contains(stepInit, underlyingSteps);
@@ -58,11 +58,11 @@ namespace Domain.Process.Tests
             Assert.DoesNotContain(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetInitSteps(new object(), It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
+            steps = provider.GetInitSteps(It.IsAny<IProcessContext>(), new object()).SelectMany(x => x).Distinct();
 
             //Assert.Equal(5, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.Contains(stepPreInit, underlyingSteps);
             Assert.Contains(stepInit, underlyingSteps);
@@ -103,13 +103,13 @@ namespace Domain.Process.Tests
                 stepAllPhases
             };
 
-            var provider = new DomainStepProvider(mockSteps);
+            var provider = new DomainStepProvider(new DomainStepCache(mockSteps));
 
             var steps = provider.GetSaveSteps<object>(null, It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
 
             Assert.Equal(6, steps.Count());
 
-            var underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            var underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -122,11 +122,11 @@ namespace Domain.Process.Tests
             Assert.Contains(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetSaveSteps(new object(), It.IsAny<IProcessContext>()).SelectMany(x => x).Distinct();
+            steps = provider.GetSaveSteps(null, new object()).SelectMany(x => x).Distinct();
 
             Assert.Equal(6, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -167,13 +167,13 @@ namespace Domain.Process.Tests
                 stepAllPhases
             };
 
-            var provider = new DomainStepProvider(mockSteps);
+            var provider = new DomainStepProvider(new DomainStepCache(mockSteps));
 
-            var steps = provider.GetStepsForPhase(StepPhase.PreInit, new object(), It.IsAny<IProcessContext>());
+            var steps = provider.GetStepsForPhase(DomainPhases.PreInit, new object(), It.IsAny<IProcessContext>());
 
             //Assert.Equal(3, steps.Count());
 
-            var underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            var underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.Contains(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -186,11 +186,11 @@ namespace Domain.Process.Tests
             Assert.DoesNotContain(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetStepsForPhase(StepPhase.Init, new object(), It.IsAny<IProcessContext>());
+            steps = provider.GetStepsForPhase(DomainPhases.Init, new object(), It.IsAny<IProcessContext>());
 
             //Assert.Equal(3, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.Contains(stepInit, underlyingSteps);
@@ -203,11 +203,11 @@ namespace Domain.Process.Tests
             Assert.DoesNotContain(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetStepsForPhase(StepPhase.PostInit, new object(), It.IsAny<IProcessContext>());
+            steps = provider.GetStepsForPhase(DomainPhases.PostInit, new object(), It.IsAny<IProcessContext>());
 
             //Assert.Equal(3, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -220,11 +220,11 @@ namespace Domain.Process.Tests
             Assert.DoesNotContain(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetStepsForPhase(StepPhase.PreSave, new object(), It.IsAny<IProcessContext>());
+            steps = provider.GetStepsForPhase(DomainPhases.PreSave, new object(), It.IsAny<IProcessContext>());
 
             //Assert.Equal(3, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -237,11 +237,11 @@ namespace Domain.Process.Tests
             Assert.Contains(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetStepsForPhase(StepPhase.Validate, new object(), It.IsAny<IProcessContext>());
+            steps = provider.GetStepsForPhase(DomainPhases.Validate, new object(), It.IsAny<IProcessContext>());
 
             //Assert.Equal(3, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -254,11 +254,11 @@ namespace Domain.Process.Tests
             Assert.Contains(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetStepsForPhase(StepPhase.Save, new object(), It.IsAny<IProcessContext>());
+            steps = provider.GetStepsForPhase(DomainPhases.Save, new object(), It.IsAny<IProcessContext>());
 
             //Assert.Equal(3, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -271,11 +271,11 @@ namespace Domain.Process.Tests
             Assert.Contains(stepSavePhases, underlyingSteps);
             Assert.Contains(stepAllPhases, underlyingSteps);
 
-            steps = provider.GetStepsForPhase(StepPhase.PostSave, new object(), It.IsAny<IProcessContext>());
+            steps = provider.GetStepsForPhase(DomainPhases.PostSave, new object(), It.IsAny<IProcessContext>());
 
             //Assert.Equal(3, steps.Count());
 
-            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step);
+            underlyingSteps = steps.Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null));
 
             Assert.DoesNotContain(stepPreInit, underlyingSteps);
             Assert.DoesNotContain(stepInit, underlyingSteps);
@@ -316,45 +316,45 @@ namespace Domain.Process.Tests
                 stepAllPhases
             };
 
-            var provider = new DomainStepProvider(mockSteps);
+            var provider = new DomainStepProvider(new DomainStepCache(mockSteps));
 
-            var steps = provider.GetStepsForPhase(StepPhase.PreInit, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step).ToArray();
+            var steps = provider.GetStepsForPhase(DomainPhases.PreInit, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null)).ToArray();
 
             Assert.Same(steps[0], stepInitPhases);
             Assert.Same(steps[1], stepAllPhases);
             Assert.Same(steps[2], stepPreInit);
 
-            steps = provider.GetStepsForPhase(StepPhase.Init, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step).ToArray();
+            steps = provider.GetStepsForPhase(DomainPhases.Init, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null)).ToArray();
 
             Assert.Same(steps[0], stepInit);
             Assert.Same(steps[1], stepInitPhases);
             Assert.Same(steps[2], stepAllPhases);
 
-            steps = provider.GetStepsForPhase(StepPhase.PostInit, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step).ToArray();
+            steps = provider.GetStepsForPhase(DomainPhases.PostInit, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null)).ToArray();
 
             Assert.Same(steps[0], stepInitPhases);
             Assert.Same(steps[1], stepPostInit);
             Assert.Same(steps[2], stepAllPhases);
 
-            steps = provider.GetStepsForPhase(StepPhase.PreSave, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step).ToArray();
+            steps = provider.GetStepsForPhase(DomainPhases.PreSave, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null)).ToArray();
 
             Assert.Same(steps[0], stepSavePhases);
             Assert.Same(steps[1], stepPreSave);
             Assert.Same(steps[2], stepAllPhases);
 
-            steps = provider.GetStepsForPhase(StepPhase.Validate, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step).ToArray();
+            steps = provider.GetStepsForPhase(DomainPhases.Validate, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null)).ToArray();
 
             Assert.Same(steps[0], stepSavePhases);
             Assert.Same(steps[1], stepValidate);
             Assert.Same(steps[2], stepAllPhases);
 
-            steps = provider.GetStepsForPhase(StepPhase.Save, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step).ToArray();
+            steps = provider.GetStepsForPhase(DomainPhases.Save, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null)).ToArray();
 
             Assert.Same(steps[0], stepSavePhases);
             Assert.Same(steps[1], stepSave);
             Assert.Same(steps[2], stepAllPhases);
 
-            steps = provider.GetStepsForPhase(StepPhase.PostSave, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>().Select(x => x.Step).ToArray();
+            steps = provider.GetStepsForPhase(DomainPhases.PostSave, new object(), It.IsAny<IProcessContext>()).Cast<IStepDescriptor<IEnumerable<IValidation>>>().Select(x => (IDomainStep)x.GetType().GetProperty("Step").GetValue(x, null)).ToArray();
 
             Assert.Same(steps[0], stepPostSave);
             Assert.Same(steps[1], stepSavePhases);
@@ -382,38 +382,38 @@ namespace Domain.Process.Tests
             var voidExecuteContextMock = new Mock<StepVoidExecuteContext>();
             var voidExecuteInjectableMock = new Mock<StepVoidExecuteInjectable>();
             voidExecuteMock.Setup(x => x.Execute(context));
-            voidExecuteMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
+            voidExecuteMock.SetupGet(x => x.Phases).Returns(DomainPhases.Init);
             voidExecuteMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            voidExecuteMock.Setup(x => x.CanExecute(context, processContext)).Returns(true);
+            voidExecuteMock.Setup(x => x.CanExecute(processContext, context)).Returns(true);
 
             voidExecuteContextMock.Setup(x => x.Execute(context, processContext));
-            voidExecuteContextMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
+            voidExecuteContextMock.SetupGet(x => x.Phases).Returns(DomainPhases.Init);
             voidExecuteContextMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            voidExecuteContextMock.Setup(x => x.CanExecute(context, processContext)).Returns(true);
+            voidExecuteContextMock.Setup(x => x.CanExecute(processContext, context)).Returns(true);
 
             voidExecuteInjectableMock.Setup(x => x.Execute(context, processContext, injectable));
-            voidExecuteInjectableMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
+            voidExecuteInjectableMock.SetupGet(x => x.Phases).Returns(DomainPhases.Init);
             voidExecuteInjectableMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            voidExecuteInjectableMock.Setup(x => x.CanExecute(context, processContext)).Returns(true);
+            voidExecuteInjectableMock.Setup(x => x.CanExecute(processContext, context)).Returns(true);
 
 
             var validationExecuteMock = new Mock<StepValidationExecute>();
             var validationExecuteContextMock = new Mock<StepValidationExecuteContext>();
             var validationExecuteInjectableMock = new Mock<StepValidationExecuteInjectable>();
             validationExecuteMock.Setup(x => x.Execute(context));
-            validationExecuteMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
+            validationExecuteMock.SetupGet(x => x.Phases).Returns(DomainPhases.Init);
             validationExecuteMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            validationExecuteMock.Setup(x => x.CanExecute(It.IsAny<object>(), It.IsAny<IProcessContext>())).Returns(true);
+            validationExecuteMock.Setup(x => x.CanExecute(It.IsAny<IProcessContext>(), It.IsAny<object>())).Returns(true);
 
             validationExecuteContextMock.Setup(x => x.Execute(context, processContext));
-            validationExecuteContextMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
+            validationExecuteContextMock.SetupGet(x => x.Phases).Returns(DomainPhases.Init);
             validationExecuteContextMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            validationExecuteContextMock.Setup(x => x.CanExecute(It.IsAny<object>(), It.IsAny<IProcessContext>())).Returns(true);
+            validationExecuteContextMock.Setup(x => x.CanExecute(It.IsAny<IProcessContext>(), It.IsAny<object>())).Returns(true);
 
             validationExecuteInjectableMock.Setup(x => x.Execute(context, processContext, injectable));
-            validationExecuteInjectableMock.SetupGet(x => x.Phases).Returns(StepPhase.Init);
+            validationExecuteInjectableMock.SetupGet(x => x.Phases).Returns(DomainPhases.Init);
             validationExecuteInjectableMock.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            validationExecuteInjectableMock.Setup(x => x.CanExecute(It.IsAny<object>(), It.IsAny<IProcessContext>())).Returns(true);
+            validationExecuteInjectableMock.Setup(x => x.CanExecute(It.IsAny<IProcessContext>(), It.IsAny<object>())).Returns(true);
 
             var mockSteps = new IDomainStep[]
             {
@@ -425,13 +425,13 @@ namespace Domain.Process.Tests
                 validationExecuteInjectableMock.Object
             };
 
-            var provider = new DomainStepProvider(mockSteps);
+            var provider = new DomainStepProvider(new DomainStepCache(mockSteps));
 
-            var steps = provider.GetStepsForPhase(StepPhase.Init, context, processContext);
+            var steps = provider.GetStepsForPhase(DomainPhases.Init, processContext, context);
 
             foreach (var step in steps)
             {
-                step.Execute(serviceProvider, context, processContext);
+                step.Execute(serviceProvider, processContext, context);
             }
 
             voidExecuteMock.Verify(x => x.Execute(context));
@@ -441,86 +441,6 @@ namespace Domain.Process.Tests
             validationExecuteMock.Verify(x => x.Execute(context));
             validationExecuteContextMock.Verify(x => x.Execute(context, processContext));
             validationExecuteInjectableMock.Verify(x => x.Execute(context, processContext, injectable));
-        }
-
-        [Fact]
-        public void StepsSupportsVariableCanExecuteDefinitions()
-        {
-
-            var context = new object();
-            var processContextMock = new Mock<IProcessContext>();
-            var processContext = processContextMock.Object;
-
-            var serviceProviderMock = new Mock<IServiceProvider>();
-            var serviceProvider = serviceProviderMock.Object;
-
-            var injectableMock = new Mock<IInjectable>();
-            var injectable = injectableMock.Object;
-
-            serviceProviderMock.Setup(x => x.GetService(typeof(IInjectable))).Returns(injectableMock.Object);
-            processContextMock.SetupGet(x => x.ProcessServices).Returns(serviceProviderMock.Object);
-
-            var customStepCanExecute = new Mock<CustomStepCanExecute>();
-            var customStepCanExecuteContext = new Mock<CustomStepCanExecuteContext>();
-            var customStepCanExecuteContext2 = new Mock<CustomStepCanExecuteContext2>();
-            customStepCanExecute.SetupGet(x => x.Phases).Returns(StepPhase.Init);
-            customStepCanExecute.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            customStepCanExecute.Setup(x => x.CanExecute(context)).Returns(true);
-            customStepCanExecute.Setup(x => x.Execute(context)).Returns(Enumerable.Empty<IValidation>());
-
-            customStepCanExecuteContext.SetupGet(x => x.Phases).Returns(StepPhase.Init);
-            customStepCanExecuteContext.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            customStepCanExecuteContext.Setup(x => x.CanExecute(It.IsAny<IProcessContext>(), context)).Returns(true);
-            customStepCanExecuteContext.Setup(x => x.Execute(context)).Returns(Enumerable.Empty<IValidation>());
-
-            customStepCanExecuteContext2.SetupGet(x => x.Phases).Returns(StepPhase.Init);
-            customStepCanExecuteContext2.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            customStepCanExecuteContext2.Setup(x => x.CanExecute(context, It.IsAny<IProcessContext>())).Returns(true);
-            customStepCanExecuteContext2.Setup(x => x.Execute(context)).Returns(Enumerable.Empty<IValidation>());
-
-            var mockSteps = new IDomainStep[]
-            {
-                customStepCanExecute.Object,
-                customStepCanExecuteContext.Object,
-                customStepCanExecuteContext2.Object,
-            };
-
-            var provider = new DomainStepProvider(mockSteps);
-
-            var steps = provider.GetStepsForPhase(StepPhase.Init, context, processContext).ToArray();
-
-            customStepCanExecute.Verify(x => x.CanExecute(context));
-            customStepCanExecuteContext.Verify(x => x.CanExecute(processContext, context));
-            customStepCanExecuteContext2.Verify(x => x.CanExecute(context, processContext));
-        }
-
-        [Fact]
-        public void CanExecuteIsNotInjectable()
-        {
-            var context = new object();
-            var processContextMock = new Mock<IProcessContext>();
-            var processContext = processContextMock.Object;
-
-            var serviceProviderMock = new Mock<IServiceProvider>();
-            var serviceProvider = serviceProviderMock.Object;
-
-            var injectableMock = new Mock<IInjectable>();
-            var injectable = injectableMock.Object;
-
-            serviceProviderMock.Setup(x => x.GetService(typeof(IInjectable))).Returns(injectableMock.Object);
-            processContextMock.SetupGet(x => x.ProcessServices).Returns(serviceProviderMock.Object);
-
-            var customStepCanExecuteInvalid = new Mock<CustomStepCanExecuteInvalid>();
-            customStepCanExecuteInvalid.SetupGet(x => x.Phases).Returns(StepPhase.Init);
-            customStepCanExecuteInvalid.Setup(x => x.CanRun(It.IsAny<Type>())).Returns(true);
-            customStepCanExecuteInvalid.Setup(x => x.CanExecute(context, processContext, new Mock<IInjectable>().Object)).Returns(true);
-
-            var mockSteps = new IDomainStep[]
-            {
-                customStepCanExecuteInvalid.Object,
-            };
-
-            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(mockSteps));
         }
 
         [Fact]
@@ -534,7 +454,7 @@ namespace Domain.Process.Tests
                 new CyclicBefore1StepB(),
             };
 
-            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(mockSteps));
+            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(new DomainStepCache(mockSteps)));
 
             mockSteps = new IDomainStep[]
             {
@@ -543,7 +463,7 @@ namespace Domain.Process.Tests
                 new CyclicBefore2StepC(),
             };
 
-            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(mockSteps));
+            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(new DomainStepCache(mockSteps)));
 
             mockSteps = new IDomainStep[]
             {
@@ -551,7 +471,7 @@ namespace Domain.Process.Tests
                 new CyclicAfter1StepB(),
             };
 
-            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(mockSteps));
+            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(new DomainStepCache(mockSteps)));
 
             mockSteps = new IDomainStep[]
             {
@@ -560,7 +480,7 @@ namespace Domain.Process.Tests
                 new CyclicAfter2StepC(),
             };
 
-            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(mockSteps));
+            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(new DomainStepCache(mockSteps)));
 
             mockSteps = new IDomainStep[]
             {
@@ -569,7 +489,7 @@ namespace Domain.Process.Tests
                 new CyclicBeforeAfterStep1StepC(),
             };
 
-            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(mockSteps));
+            Assert.Throws(typeof(NotSupportedException), () => new DomainStepProvider(new DomainStepCache(mockSteps)));
         }
     }
 }

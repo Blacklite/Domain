@@ -28,16 +28,6 @@ namespace Blacklite.Framework.Domain.Process.Steps
             where T : class;
     }
 
-    public interface IDomainStepCache : IPhasedStepCache<IDomainStep, IEnumerable<IValidation>>
-    {
-
-    }
-
-    class DomainStepCache : PhasedStepCache<IDomainStep, IEnumerable<IValidation>>, IDomainStepCache
-    {
-
-    }
-
     class DomainStepProvider : PhasedStepProvider<IDomainStep, IEnumerable<IValidation>>, IDomainStepProvider
     {
         private readonly IReadOnlyDictionary<string, IEnumerable<IStepPhase>> _stages;

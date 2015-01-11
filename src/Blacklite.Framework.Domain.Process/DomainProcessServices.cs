@@ -16,6 +16,7 @@ namespace Blacklite.Framework.Domain.Process
             var describe = new ServiceDescriber(configuration);
 
             yield return describe.Singleton(typeof(IDomainStepProvider), typeof(DomainStepProvider));
+            yield return describe.Singleton(typeof(IDomainStepCache), typeof(DomainStepCache));
             yield return describe.Transient(typeof(IProcessResponse<>), typeof(ProcessResponse<>));
             yield return describe.Transient(typeof(ISaveRequest<>), typeof(SaveRequest<>));
             yield return describe.Transient(typeof(ISaveRequestHandler<>), typeof(SaveRequestHandler<>));

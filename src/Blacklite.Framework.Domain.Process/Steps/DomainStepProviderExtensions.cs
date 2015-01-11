@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Blacklite.Framework.Domain.Process.Steps
 {
-    public static class StepProviderExtensions
+    public static class DomainStepProviderExtensions
     {
         public static string Init { get; } = nameof(Init);
         public static string Save { get; } = nameof(Save);
