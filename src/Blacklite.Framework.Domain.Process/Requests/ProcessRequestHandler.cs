@@ -18,14 +18,14 @@ namespace Blacklite.Framework.Domain.Process.Requests
     {
         private readonly IEnumerable<IPreRequestHandler<TRequest>> _preRequestHandlers;
         private readonly IEnumerable<IPostRequestHandler<TRequest, TResponse>> _postRequestHandlers;
-        protected IStepProvider StepProvider { get; }
+        protected IDomainStepProvider StepProvider { get; }
         protected IProcessContextProvider ProcessContextProvider { get; }
         protected IServiceProvider ServiceProvider { get; }
         protected TResponse Response { get; }
 
         public ProcessRequestHandler(IEnumerable<IPreRequestHandler<TRequest>> preRequestHandlers,
             IEnumerable<IPostRequestHandler<TRequest, TResponse>> postRequestHandlers,
-            IStepProvider stepProvider,
+            IDomainStepProvider stepProvider,
             IProcessContextProvider processContextProvider,
             IServiceProvider serviceProvider,
             TResponse response)

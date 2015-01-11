@@ -17,7 +17,7 @@ namespace Blacklite.Framework.Domain.Process.Requests
         public SaveRequestHandler(
             IEnumerable<IPreRequestHandler<ISaveRequest<T>>> preRequestHandlers,
             IEnumerable<IPostRequestHandler<ISaveRequest<T>, IProcessResponse<T>>> postRequestHandlers,
-            IStepProvider stepProvider,
+            IDomainStepProvider stepProvider,
             IProcessContextProvider processContextProvider,
             IServiceProvider serviceProvider,
             IProcessResponse<T> response)
@@ -33,17 +33,17 @@ namespace Blacklite.Framework.Domain.Process.Requests
             var processContext = ProcessContextProvider.GetContextFor(message.Request);
 
             // Get the steps for the stage
-            var steps = StepProvider.GetStepsForStage(StepProviderExtensions.Save, message.Request, processContext);
+            var phases = StepProvider.GetStepsForStage(StepProviderExtensions.Save, processContext, message.Request);
 
             var validations = new List<IValidation>();
             Response.Errors = validations;
 
             // Each phase runs sequentially
-            foreach (var phase in steps)
+            foreach (var phase in phases)
             {
                 foreach (var descriptor in phase)
                 {
-                    validations.AddRange(descriptor.Execute(processContext.ProcessServices, message.Request, processContext));
+                    validations.AddRange(descriptor.Execute(processContext.ProcessServices, processContext, message.Request));
                 }
 
                 // If a phase encounters errors, the request is aborted, and the errors returned.

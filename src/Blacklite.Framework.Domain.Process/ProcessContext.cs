@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Blacklite.Framework.Steps;
+using System;
 
 namespace Blacklite.Framework.Domain.Process
 {
-    public interface IProcessContext
+    public interface IProcessContext : IStepContext
     {
-        IServiceProvider ProcessServices { get; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Blacklite.Framework.Domain.Process;
 using Blacklite.Framework.Domain.Process.Steps;
+using Blacklite.Framework.Steps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Linq;
 namespace Domain.Process.Tests.Fixtures
 {
     [BeforeStep(typeof(StepInitPhases))]
-    public class StepInit : Step<object>
+    public class StepInit : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(object instance)
         {
@@ -17,9 +18,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepPostInit : Step<object>
+    public class StepPostInit : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.PostInit;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.PostInit;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -27,9 +28,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(StepAllPhases))]
-    public class StepPreInit : Step<object>
+    public class StepPreInit : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.PreInit;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.PreInit;
 
         public IEnumerable<IValidation> Execute(object instance)
         {
@@ -37,9 +38,9 @@ namespace Domain.Process.Tests.Fixtures
         }
     }
 
-    public class StepInitPhases : Step<object>
+    public class StepInitPhases : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.InitPhases;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.InitPhases;
 
         public IEnumerable<IValidation> Execute(IProcessContext context, object instance)
         {
@@ -48,9 +49,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepPreSave : Step<object>
+    public class StepPreSave : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.PreSave;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.PreSave;
         public IEnumerable<IValidation> Execute(object instance, IProcessContext context)
         {
             return Enumerable.Empty<IValidation>();
@@ -60,18 +61,18 @@ namespace Domain.Process.Tests.Fixtures
     public interface IInjectable { }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepSave : Step<object>
+    public class StepSave : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Save;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Save;
         public void Execute(object instance, IProcessContext context, IInjectable injectable)
         {
         }
     }
 
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepValidate : Step<object>
+    public class StepValidate : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Validate;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Validate;
         public IEnumerable<IValidation> Execute(object instance, IInjectable injectable)
         {
             return Enumerable.Empty<IValidation>();
@@ -80,16 +81,16 @@ namespace Domain.Process.Tests.Fixtures
 
     [BeforeStep(typeof(StepSavePhases))]
     [BeforeStep(typeof(StepAllPhases))]
-    public class StepPostSave : Step<object>
+    public class StepPostSave : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.PostSave;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.PostSave;
         public void Execute(object instance, IInjectable injectable)
         {
         }
     }
-    public class StepSavePhases : Step<object>
+    public class StepSavePhases : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.SavePhases;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.SavePhases;
         public IEnumerable<IValidation> Execute(object instance, IProcessContext context, IInjectable injectable)
         {
             return Enumerable.Empty<IValidation>();
@@ -98,105 +99,61 @@ namespace Domain.Process.Tests.Fixtures
 
     [AfterStep(typeof(StepInitPhases))]
     [AfterStep(typeof(StepSavePhases))]
-    public class StepAllPhases : Step<object>
+    public class StepAllPhases : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.AllPhases;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.AllPhases;
         public IEnumerable<IValidation> Execute(object instance, IProcessContext context, IInjectable injectable)
         {
             return Enumerable.Empty<IValidation>();
         }
     }
 
-    public abstract class StepVoidExecute : Step<object>
+    public abstract class StepVoidExecute : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public abstract void Execute(object instance);
     }
 
-    public abstract class StepVoidExecuteContext : Step<object>
+    public abstract class StepVoidExecuteContext : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public abstract void Execute(object instance, IProcessContext context);
     }
 
-    public abstract class StepVoidExecuteInjectable : Step<object>
+    public abstract class StepVoidExecuteInjectable : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public abstract void Execute(object instance, IProcessContext context, IInjectable injectable);
     }
 
-    public abstract class StepValidationExecute : Step<object>
+    public abstract class StepValidationExecute : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
-    public abstract class StepValidationExecuteContext : Step<object>
+    public abstract class StepValidationExecuteContext : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public abstract IEnumerable<IValidation> Execute(object instance, IProcessContext context);
     }
 
-    public abstract class StepValidationExecuteInjectable : Step<object>
+    public abstract class StepValidationExecuteInjectable : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public abstract IEnumerable<IValidation> Execute(object instance, IProcessContext context, IInjectable injectable);
     }
 
-    public abstract class CustomStepCanExecute : IStep
-    {
-        public virtual IEnumerable<IStepPhase> Phases { get; } = StepPhase.Init;
-
-        public abstract bool CanExecute(object instance);
-
-        public abstract bool CanRun(Type type);
-
-        public abstract IEnumerable<IValidation> Execute(object instance);
-    }
-
-    public abstract class CustomStepCanExecuteContext : IStep
-    {
-        public virtual IEnumerable<IStepPhase> Phases { get; } = StepPhase.Init;
-
-        public abstract bool CanExecute(IProcessContext context, object instance);
-
-        public abstract bool CanRun(Type type);
-
-        public abstract IEnumerable<IValidation> Execute(object instance);
-    }
-
-    public abstract class CustomStepCanExecuteContext2 : IStep
-    {
-        public virtual IEnumerable<IStepPhase> Phases { get; } = StepPhase.Init;
-
-        public abstract bool CanExecute(object instance, IProcessContext context);
-
-        public abstract bool CanRun(Type type);
-
-        public abstract IEnumerable<IValidation> Execute(object instance);
-    }
-
-    public abstract class CustomStepCanExecuteInvalid : IStep
-    {
-        public virtual IEnumerable<IStepPhase> Phases { get; } = StepPhase.Init;
-
-        public abstract bool CanExecute(object instance, IProcessContext context, IInjectable injectable);
-
-        public abstract bool CanRun(Type type);
-
-        public abstract IEnumerable<IValidation> Execute(object instance);
-    }
-
     [BeforeStep(typeof(CyclicBefore1StepB))]
-    public class CyclicBefore1StepA : Step<object>
+    public class CyclicBefore1StepA : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(object instance)
         {
@@ -204,9 +161,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore1StepA))]
-    public class CyclicBefore1StepB : Step<object>
+    public class CyclicBefore1StepB : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -214,9 +171,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore2StepB))]
-    public class CyclicBefore2StepA : Step<object>
+    public class CyclicBefore2StepA : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -224,9 +181,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore2StepC))]
-    public class CyclicBefore2StepB : Step<object>
+    public class CyclicBefore2StepB : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -234,9 +191,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [BeforeStep(typeof(CyclicBefore2StepA))]
-    public class CyclicBefore2StepC : Step<object>
+    public class CyclicBefore2StepC : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -244,9 +201,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter1StepB))]
-    public class CyclicAfter1StepA : Step<object>
+    public class CyclicAfter1StepA : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(object instance)
         {
@@ -254,9 +211,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter1StepA))]
-    public class CyclicAfter1StepB : Step<object>
+    public class CyclicAfter1StepB : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -264,9 +221,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter2StepB))]
-    public class CyclicAfter2StepA : Step<object>
+    public class CyclicAfter2StepA : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -274,9 +231,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter2StepC))]
-    public class CyclicAfter2StepB : Step<object>
+    public class CyclicAfter2StepB : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -284,9 +241,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicAfter2StepA))]
-    public class CyclicAfter2StepC : Step<object>
+    public class CyclicAfter2StepC : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -295,17 +252,17 @@ namespace Domain.Process.Tests.Fixtures
 
     [BeforeStep(typeof(CyclicBeforeAfterStep1StepB))]
     [AfterStep(typeof(CyclicBeforeAfterStep1StepC))]
-    public class CyclicBeforeAfterStep1StepA : Step<object>
+    public class CyclicBeforeAfterStep1StepA : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
         }
     }
-    public class CyclicBeforeAfterStep1StepB : Step<object>
+    public class CyclicBeforeAfterStep1StepB : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {
@@ -313,9 +270,9 @@ namespace Domain.Process.Tests.Fixtures
     }
 
     [AfterStep(typeof(CyclicBeforeAfterStep1StepB))]
-    public class CyclicBeforeAfterStep1StepC : Step<object>
+    public class CyclicBeforeAfterStep1StepC : DomainStep<object>
     {
-        public override IEnumerable<IStepPhase> Phases => StepPhase.Init;
+        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
         public void Execute(IProcessContext context, object instance)
         {

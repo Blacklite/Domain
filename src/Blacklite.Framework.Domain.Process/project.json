@@ -5,6 +5,7 @@
         "Blacklite.Framework.Domain.Requests": "",
         "Blacklite.Framework.Shared": "1.0.0-beta-*",
         "Blacklite.Framework.Shared.Reflection": "1.0.0-beta-*",
+        "Blacklite.Framework.Steps": "1.0.0-beta-*",
         "Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-*", "type": "build" }
     },
 
