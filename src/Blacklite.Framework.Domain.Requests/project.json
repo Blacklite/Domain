@@ -2,10 +2,17 @@
     "version": "1.0.0-*",
     "dependencies": {
         "Microsoft.Framework.DependencyInjection": "1.0.0-rc1-*",
-        "Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-*", "type": "build" }
+        "Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-26", "type": "build" }
     },
 
     "frameworks": {
+        "net45": {
+            "frameworkAssemblies": {
+                "System.Threading.Tasks": "4.0.0.0"
+            },
+            "dependencies": {
+            }
+        },
         "aspnet50": {
             "frameworkAssemblies": { "System.Threading.Tasks": "4.0.10.0" },
             "dependencies": {

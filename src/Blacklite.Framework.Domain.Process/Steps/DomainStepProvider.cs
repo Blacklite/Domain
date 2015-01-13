@@ -1,5 +1,4 @@
-﻿using Blacklite.Framework.TopographicalSort;
-using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -43,7 +42,7 @@ namespace Blacklite.Framework.Domain.Process.Steps
             IEnumerable<IStepPhase> phases;
             if (!_stages.TryGetValue(stage, out phases))
                 return Enumerable.Empty<IGrouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>>();
-            return phases.Select(x => new Grouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>(x, GetStepsForPhase(x, instance, context)));
+            return phases.Select(x => new Grouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>(x, GetStepsForPhase(x, context, instance)));
         }
 
         private class Grouping<TKey, TValue> : IGrouping<TKey, TValue>
