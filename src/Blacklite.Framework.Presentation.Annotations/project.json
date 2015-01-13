@@ -4,6 +4,14 @@
     },
 
     "frameworks": {
+        "net45": {
+            "frameworkAssemblies": {
+                "System.ComponentModel.DataAnnotations": "4.0.0.0",
+                "System.Linq": "4.0.0.0"
+            },
+            "dependencies": {
+            }
+        },
         "aspnet50": {
             "frameworkAssemblies": {
                 "System.ComponentModel.DataAnnotations": "4.0.0.0",

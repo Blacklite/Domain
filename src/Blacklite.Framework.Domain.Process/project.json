@@ -3,21 +3,25 @@
     "dependencies": {
         "Microsoft.Framework.DependencyInjection": "1.0.0-rc1-*",
         "Blacklite.Framework.Domain.Requests": "",
-        "Blacklite.Framework.Shared": "1.0.0-beta-*",
-        "Blacklite.Framework.Shared.Reflection": "1.0.0-beta-*",
         "Blacklite.Framework.Steps": "1.0.0-beta-*",
-        "Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-*", "type": "build" }
+        "Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-27", "type": "build" }
     },
-
     "frameworks": {
+        "net45": {
+            "frameworkAssemblies": {
+                "System.Collections.Concurrent": "4.0.0.0",
+                "System.Reflection": "4.0.0.0",
+                "System.Reflection.Extensions": "4.0.0.0"
+            },
+            "dependencies": { }
+        },
         "aspnet50": {
             "frameworkAssemblies": {
                 "System.Collections.Concurrent": "4.0.0.0",
                 "System.Reflection": "4.0.10.0",
                 "System.Reflection.Extensions": "4.0.0.0"
             },
-            "dependencies": {
-            }
+            "dependencies": { }
         },
         "aspnetcore50": {
             "dependencies": {
