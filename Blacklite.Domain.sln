@@ -42,8 +42,6 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Presentation.Annotations.Te
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Domain.Requests", "src\Blacklite.Framework.Domain.Requests\Blacklite.Framework.Domain.Requests.kproj", "{055E246A-0E1C-47E0-BA83-DEC13A80C54A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApplication1", "tests\WebApplication1\WebApplication1.kproj", "{D37F4674-E8E3-4E53-B4DE-4F3988041EC7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,10 +76,6 @@ Global
 		{055E246A-0E1C-47E0-BA83-DEC13A80C54A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{055E246A-0E1C-47E0-BA83-DEC13A80C54A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{055E246A-0E1C-47E0-BA83-DEC13A80C54A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D37F4674-E8E3-4E53-B4DE-4F3988041EC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D37F4674-E8E3-4E53-B4DE-4F3988041EC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D37F4674-E8E3-4E53-B4DE-4F3988041EC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D37F4674-E8E3-4E53-B4DE-4F3988041EC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +88,5 @@ Global
 		{C741C5E3-BC91-4E83-B81F-1D6C55651C25} = {67B208B7-4EBA-44DE-A66E-2A7868F78DAE}
 		{4132D95F-78BB-43E1-B28C-0F23ECE5FEA3} = {67B208B7-4EBA-44DE-A66E-2A7868F78DAE}
 		{055E246A-0E1C-47E0-BA83-DEC13A80C54A} = {752850F2-6022-4585-8693-CDBB3B7A3CCB}
-		{D37F4674-E8E3-4E53-B4DE-4F3988041EC7} = {67B208B7-4EBA-44DE-A66E-2A7868F78DAE}
 	EndGlobalSection
 EndGlobal

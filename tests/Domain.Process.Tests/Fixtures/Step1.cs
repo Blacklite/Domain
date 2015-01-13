@@ -1,4 +1,5 @@
-﻿using Blacklite.Framework.Domain.Process;
+﻿using Blacklite.Framework;
+using Blacklite.Framework.Domain.Process;
 using Blacklite.Framework.Domain.Process.Steps;
 using Blacklite.Framework.Steps;
 using System;
@@ -108,44 +109,68 @@ namespace Domain.Process.Tests.Fixtures
         }
     }
 
-    public abstract class StepVoidExecute : DomainStep<object>
+    public abstract class StepVoidExecute : IDomainStep
     {
-        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+        public virtual IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+
+        public abstract bool CanExecute([NotNull]IStepContext context, object instance);
+
+        public abstract bool CanRun([NotNull]Type type);
 
         public abstract void Execute(object instance);
     }
 
-    public abstract class StepVoidExecuteContext : DomainStep<object>
+    public abstract class StepVoidExecuteContext : IDomainStep
     {
-        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+        public virtual IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
-        public abstract void Execute(object instance, IProcessContext context);
+        public abstract bool CanExecute([NotNull]IStepContext context, object instance);
+
+        public abstract bool CanRun([NotNull]Type type);
+
+        public abstract void Execute(IProcessContext context, object instance);
     }
 
-    public abstract class StepVoidExecuteInjectable : DomainStep<object>
+    public abstract class StepVoidExecuteInjectable : IDomainStep
     {
-        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+        public virtual IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+
+        public abstract bool CanExecute([NotNull]IStepContext context, object instance);
+
+        public abstract bool CanRun([NotNull]Type type);
 
         public abstract void Execute(object instance, IProcessContext context, IInjectable injectable);
     }
 
-    public abstract class StepValidationExecute : DomainStep<object>
+    public abstract class StepValidationExecute : IDomainStep
     {
-        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+        public virtual IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+
+        public abstract bool CanExecute([NotNull]IStepContext context, object instance);
+
+        public abstract bool CanRun([NotNull]Type type);
 
         public abstract IEnumerable<IValidation> Execute(object instance);
     }
 
-    public abstract class StepValidationExecuteContext : DomainStep<object>
+    public abstract class StepValidationExecuteContext : IDomainStep
     {
-        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+        public virtual IEnumerable<IStepPhase> Phases => DomainPhases.Init;
 
-        public abstract IEnumerable<IValidation> Execute(object instance, IProcessContext context);
+        public abstract bool CanExecute([NotNull]IStepContext context, object instance);
+
+        public abstract bool CanRun([NotNull]Type type);
+
+        public abstract IEnumerable<IValidation> Execute(IProcessContext context, object instance);
     }
 
-    public abstract class StepValidationExecuteInjectable : DomainStep<object>
+    public abstract class StepValidationExecuteInjectable : IDomainStep
     {
-        public override IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+        public virtual IEnumerable<IStepPhase> Phases => DomainPhases.Init;
+
+        public abstract bool CanExecute([NotNull]IStepContext context, object instance);
+
+        public abstract bool CanRun([NotNull]Type type);
 
         public abstract IEnumerable<IValidation> Execute(object instance, IProcessContext context, IInjectable injectable);
     }

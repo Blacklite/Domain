@@ -36,14 +36,12 @@ namespace Blacklite.Framework.Domain.Process.Steps
             _stages = new ReadOnlyDictionary<string, IEnumerable<IStepPhase>>(stepCache.GroupBy(x => x.Key.Stage, x => x.Key).ToDictionary(x => x.Key, x => x.Distinct().OrderByDescending(z => z.Order).AsEnumerable()));
         }
 
-        public IEnumerable<IGrouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>> GetStepsForStage<T>(string stage, [NotNull]
-        IProcessContext context, [NotNull]
-        T instance) where T : class
+        public IEnumerable<IGrouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>> GetStepsForStage<T>(string stage, [NotNull] IProcessContext context, [NotNull] T instance) where T : class
         {
             IEnumerable<IStepPhase> phases;
             if (!_stages.TryGetValue(stage, out phases))
                 return Enumerable.Empty<IGrouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>>();
-            return phases.Select(x => new Grouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>(x, GetStepsForPhase(x, instance, context)));
+            return phases.Select(x => new Grouping<IStepPhase, IStepDescriptor<IEnumerable<IValidation>>>(x, GetStepsForPhase(x, context, instance)));
         }
 
         private class Grouping<TKey, TValue> : IGrouping<TKey, TValue>
