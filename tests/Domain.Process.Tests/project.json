@@ -2,7 +2,7 @@
     "dependencies": {
         "Blacklite.Framework.Domain.Process": "",
         "Moq": "4.2.1408.619",
-        "Xunit.KRunner": "1.0.0-rc1-*"
+        "Xunit.KRunner": "1.0.0-beta3-*"
     },
 
     "commands": {
