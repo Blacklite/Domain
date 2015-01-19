@@ -3,6 +3,10 @@
     "dependencies": {
     },
 
+	"compilationOptions": {
+		"warningsAsErrors": true
+	},
+
     "frameworks": {
         "net45": {
             "frameworkAssemblies": {

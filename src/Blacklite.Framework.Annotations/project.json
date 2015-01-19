@@ -4,6 +4,10 @@
         "NR6Pack": "0.5.0.0"
     },
 
+	"compilationOptions": {
+		"warningsAsErrors": true
+	},
+
     "frameworks": {
         "net45": {
             "frameworkAssemblies": {

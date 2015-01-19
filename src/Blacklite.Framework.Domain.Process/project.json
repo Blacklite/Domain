@@ -6,6 +6,11 @@
 		"Blacklite.Framework.Steps": "1.0.0-beta-*",
 		"Blacklite.Framework.Interfaces": { "version": "1.0.0-beta-*", "type": "build" }
 	},
+
+	"compilationOptions": {
+		"warningsAsErrors": true
+	},
+
 	"frameworks": {
 		"net45": {
 			"frameworkAssemblies": {
