@@ -6,6 +6,7 @@
     "frameworks": {
         "net45": {
             "frameworkAssemblies": {
+				"System.Runtime": "4.0.0.0",
                 "System.ComponentModel.DataAnnotations": "4.0.0.0",
                 "System.Linq": "4.0.0.0"
             },
@@ -14,6 +15,7 @@
         },
         "aspnet50": {
             "frameworkAssemblies": {
+				"System.Runtime": "4.0.20.0",
                 "System.ComponentModel.DataAnnotations": "4.0.0.0",
                 "System.Linq": "4.0.0.0"
             },

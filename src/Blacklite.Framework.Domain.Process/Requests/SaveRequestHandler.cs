@@ -43,7 +43,7 @@ namespace Blacklite.Framework.Domain.Process.Requests
             {
                 foreach (var descriptor in phase)
                 {
-                    validations.AddRange(descriptor.Execute(processContext.ProcessServices, processContext, message.Request));
+                    validations.AddRange(descriptor.Execute(processContext.ServiceProvider, processContext, message.Request));
                 }
 
                 // If a phase encounters errors, the request is aborted, and the errors returned.

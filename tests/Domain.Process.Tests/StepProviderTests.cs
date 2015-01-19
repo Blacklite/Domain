@@ -376,7 +376,7 @@ namespace Domain.Process.Tests
             var injectable = injectableMock.Object;
 
             serviceProviderMock.Setup(x => x.GetService(typeof(IInjectable))).Returns(injectableMock.Object);
-            processContextMock.SetupGet(x => x.ProcessServices).Returns(serviceProviderMock.Object);
+            processContextMock.SetupGet(x => x.ServiceProvider).Returns(serviceProviderMock.Object);
 
             var voidExecuteMock = new Mock<StepVoidExecute>();
             var voidExecuteContextMock = new Mock<StepVoidExecuteContext>();
