@@ -33,10 +33,10 @@
         },
         "aspnetcore50": {
             "dependencies": {
-                "System.Runtime": "4.0.20-beta-*",
-                "System.ComponentModel.Annotations": "4.0.10-beta-*",
-                "System.Text.RegularExpressions": "4.0.10-beta-*",
-                "System.Linq": "4.0.0-beta-*"
+                "System.Runtime": "4.0.20-*",
+                "System.ComponentModel.Annotations": "4.0.10-*",
+                "System.Text.RegularExpressions": "4.0.10-*",
+                "System.Linq": "4.0.0-*"
             }
         }
     }
