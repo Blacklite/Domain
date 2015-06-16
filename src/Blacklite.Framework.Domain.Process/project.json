@@ -1,13 +1,13 @@
 ﻿{
     "version": "1.0.0-*",
     "dependencies": {
-        "Microsoft.Framework.DependencyInjection": "1.0.0-beta3",
+        "Microsoft.Framework.DependencyInjection": "1.0.0-beta5-*",
         "Blacklite.Framework.Domain.Requests": "1.0.0-*",
         "Blacklite.Framework.Steps": "1.0.0-*",
         "Blacklite.Framework.Interfaces": "1.0.0-*"
     },
 
-   "devDependencies": {
+    "devDependencies": {
         "NR6Pack": "0.5.0.0"
     },
 
@@ -16,30 +16,15 @@
     },
 
     "frameworks": {
-        "net45": {
-            "frameworkAssemblies": {
-                "System.Collections.Concurrent": "4.0.0.0",
-                "System.Reflection": "4.0.0.0",
-                "System.Reflection.Extensions": "4.0.0.0"
-            },
-            "dependencies": { }
-        },
-        "aspnet50": {
-            "frameworkAssemblies": {
-                "System.Collections.Concurrent": "4.0.0.0",
-                "System.Reflection": "4.0.0.0",
-                "System.Reflection.Extensions": "4.0.0.0"
-            },
-            "dependencies": { }
-        },
-        "aspnetcore50": {
+        "dnx451": { },
+        "dnxcore50": {
             "dependencies": {
-                "System.Runtime": "4.0.20-*",
-                "System.ComponentModel": "4.0.0-*",
-                "System.Reflection.Extensions": "4.0.0-*",
-                "System.Reflection.TypeExtensions": "4.0.0-*",
-                "System.Collections.Concurrent": "4.0.0-*",
-                "System.ObjectModel": "4.0.10-*"
+                "System.Runtime": "4.0.20-beta-*",
+                "System.ComponentModel": "4.0.0-beta-*",
+                "System.Reflection.Extensions": "4.0.0-beta-*",
+                "System.Reflection.TypeExtensions": "4.0.0-beta-*",
+                "System.Collections.Concurrent": "4.0.0-beta-*",
+                "System.ObjectModel": "4.0.10-beta-*"
             }
         }
     }

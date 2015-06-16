@@ -1,42 +1,29 @@
 ﻿{
     "version": "1.0.0-*",
 
-   "dependencies": {
+    "dependencies": {
     },
 
-   "devDependencies": {
+    "devDependencies": {
         "NR6Pack": "0.5.0.0"
     },
 
-	"compilationOptions": {
-		"warningsAsErrors": true
-	},
+    "compilationOptions": {
+        "warningsAsErrors": true
+    },
 
     "frameworks": {
-        "net45": {
+        "dnx451": {
             "frameworkAssemblies": {
-				"System.Runtime": "4.0.0.0",
-                "System.ComponentModel.DataAnnotations": "4.0.0.0",
-                "System.Linq": "4.0.0.0"
-            },
-            "dependencies": {
+                "System.ComponentModel.DataAnnotations": "4.0.0.0"
             }
         },
-        "aspnet50": {
-            "frameworkAssemblies": {
-				"System.Runtime": "4.0.10.0",
-                "System.ComponentModel.DataAnnotations": "4.0.0.0",
-                "System.Linq": "4.0.0.0"
-            },
+        "dnxcore50": {
             "dependencies": {
-            }
-        },
-        "aspnetcore50": {
-            "dependencies": {
-                "System.Runtime": "4.0.20-*",
-                "System.ComponentModel.Annotations": "4.0.10-*",
-                "System.Text.RegularExpressions": "4.0.10-*",
-                "System.Linq": "4.0.0-*"
+                "System.Runtime": "4.0.20-beta-*",
+                "System.ComponentModel.Annotations": "4.0.10-beta-*",
+                "System.Text.RegularExpressions": "4.0.10-beta-*",
+                "System.Linq": "4.0.0-beta-*"
             }
         }
     }

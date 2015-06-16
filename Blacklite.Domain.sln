@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22609.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A77E91D3-24A0-4B8B-9C14-E900EE02008B}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,19 +28,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{51EE
 		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Annotations", "src\Blacklite.Framework.Annotations\Blacklite.Framework.Annotations.kproj", "{B60457F4-B3FD-40BE-8220-1BF5B62FB6EF}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Annotations", "src\Blacklite.Framework.Annotations\Blacklite.Framework.Annotations.xproj", "{B60457F4-B3FD-40BE-8220-1BF5B62FB6EF}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Domain.Process", "src\Blacklite.Framework.Domain.Process\Blacklite.Framework.Domain.Process.kproj", "{B0E61C80-8961-4F04-AABF-B1B5B9812E63}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Domain.Process", "src\Blacklite.Framework.Domain.Process\Blacklite.Framework.Domain.Process.xproj", "{B0E61C80-8961-4F04-AABF-B1B5B9812E63}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Domain.Requests", "src\Blacklite.Framework.Domain.Requests\Blacklite.Framework.Domain.Requests.kproj", "{2AC4D9B4-63CC-406D-BA1C-A5EA9278D67F}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Domain.Requests", "src\Blacklite.Framework.Domain.Requests\Blacklite.Framework.Domain.Requests.xproj", "{2AC4D9B4-63CC-406D-BA1C-A5EA9278D67F}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Presentation.Annotations", "src\Blacklite.Framework.Presentation.Annotations\Blacklite.Framework.Presentation.Annotations.kproj", "{9E1B3093-5E30-4B18-B1CD-D887C749F8D9}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Presentation.Annotations", "src\Blacklite.Framework.Presentation.Annotations\Blacklite.Framework.Presentation.Annotations.xproj", "{9E1B3093-5E30-4B18-B1CD-D887C749F8D9}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Annotations.Tests", "test\Annotations.Tests\Annotations.Tests.kproj", "{D6402DB9-26A6-4D8D-BDF9-9A96613FE988}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Annotations.Tests", "test\Annotations.Tests\Annotations.Tests.xproj", "{D6402DB9-26A6-4D8D-BDF9-9A96613FE988}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Domain.Process.Tests", "test\Domain.Process.Tests\Domain.Process.Tests.kproj", "{1A4FCFE1-4ABC-46E3-92DE-6D0E46CF7F12}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Domain.Process.Tests", "test\Domain.Process.Tests\Domain.Process.Tests.xproj", "{1A4FCFE1-4ABC-46E3-92DE-6D0E46CF7F12}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Presentation.Annotations.Tests", "test\Presentation.Annotations.Tests\Presentation.Annotations.Tests.kproj", "{1F1C03EE-3BA7-42B7-AEAD-032D9A3A12E7}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Presentation.Annotations.Tests", "test\Presentation.Annotations.Tests\Presentation.Annotations.Tests.xproj", "{1F1C03EE-3BA7-42B7-AEAD-032D9A3A12E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

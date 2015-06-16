@@ -1,5 +1,4 @@
-﻿using Microsoft.Framework.ConfigurationModel;
-using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +8,9 @@ namespace Blacklite.Framework.Domain.Requests
 {
     public static class RequestHandlerServices
     {
-        public static IEnumerable<IServiceDescriptor> GetDefaultServices(IConfiguration configuration = null)
+        public static IEnumerable<ServiceDescriptor> GetDefaultServices()
         {
-            var describe = new ServiceDescriber(configuration);
-
-            yield return describe.Transient(typeof(IRequestHandler<,>), typeof(RequestHandler<,>));
+            yield return ServiceDescriptor.Transient(typeof(IRequestHandler<,>), typeof(RequestHandler<,>));
         }
     }
 }
