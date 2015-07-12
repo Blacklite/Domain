@@ -4,7 +4,7 @@
         "Microsoft.Framework.DependencyInjection": "1.0.0-beta5-*",
         "Blacklite.Framework.Domain.Requests": "1.0.0-*",
         "Blacklite.Framework.Steps": "1.0.0-*",
-        "Blacklite.Framework.Interfaces": "1.0.0-*"
+        "Blacklite.Framework.Abstractions": "1.0.0-*"
     },
 
     "devDependencies": {
